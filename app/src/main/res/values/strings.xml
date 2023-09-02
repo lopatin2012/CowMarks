@@ -1,0 +1,83 @@
+<resources>
+    <!--Название приложения-->
+    <string name="CowMarks">CowMarks</string>
+
+    <!--Нижнее меню-->
+    <string name="bottom_factory">Производство</string>
+    <string name="bottom_new_job">Новое задание</string>
+    <string name="bottom_list_job">Список заданий</string>
+    <string name="bottom_utility">Дополнительно</string>
+    <string name="bottom_settings">Настройки</string>
+
+    <!--Окно производства-->
+    <string name="factory_date">Дата маркировки:\n%1s</string>
+    <string name="factory_job">%1s\nЗадание №%2s</string>
+    <string name="factory_party">Партия:\n%1s</string>
+    <string name="factory_product">Продукт:\n%1s</string>
+    <string name="factory_plan">План производства: %1s</string>
+    <string name="factory_counter">%1s</string>
+    <string name="factory_numbers_of_codes">Кодов: %1s</string>
+    <string name="factory_codes_on_the_printer">Принтер: %1s</string>
+    <string name="factory_printer_template">Шаблон: %1s</string>
+    <string name="factory_button_start_printing">Начать печать</string>
+    <string name="factory_button_end">Завершить партию</string>
+
+    <!--Создание задания-->
+    <string name="new_job_product_text">Выберите продукт</string>
+    <string name="new_job_date_text">Дата маркировки</string>
+    <string name="new_job_date_edit">Введите дату маркировки</string>
+    <string name="new_job_party_text">Партия</string>
+    <string name="new_job_party_edit">Введите партию</string>
+    <string name="new_job_plan_text">План производства</string>
+    <string name="new_job_plan_edit">Введите количество</string>
+    <string name="new_job_codes_to_the_printer_text">Кодов на печать</string>
+    <string name="new_job_codes_to_the_printer_edit">Введите количество</string>
+    <string name="new_job_button_create">Создать задание</string>
+
+    <!--Одно задание-->
+    <string name="list_job_product_text">Наименования продукта:\n%1s</string>
+    <string name="list_job_date_text">Дата производства:\n%1s</string>
+    <string name="list_job_plan_text">План производства:\n%1s</string>
+    <string name="list_job_party_text">Партия:\n%1s</string>
+    <string name="list_job_codes_for_printer">Коды на принтер:\n%1s</string>
+    <string name="list_job_counter_text">Счётчик:ㅤ|План:\n%1sㅤㅤ|%2s</string>
+    <string name="list_job_numbers_of_the_printer">Коды на принтер:\n%1s</string>
+    <string name="list_job_status_text">Задания №%1s:\n%2s</string>
+    <string name="list_job_button_open">Открыть задание</string>
+    <string name="list_job_button_close">Выгрузить отчёт</string>
+
+    <!--Дополнительные возможности-->
+
+    <!--Системные настройки-->
+    <string name="utility_update_data_base_text">Обновить базу данных</string>
+    <string name="utility_update_data_base_button">Обновить</string>
+    <string name="utility_ip_local_server_text">Адрес локального сервера</string>
+    <string name="utility_ip_local_server_edit">Введите адрес</string>
+    
+    <string-array name="settings_camera_mode">
+        <item>Проверка->Добавление</item>
+        <item>Добавление->Проверка</item>
+        <item>Добавление->Выгрузка</item>
+    </string-array>
+
+    <!--Настройки-->
+    <string name="settings_camera_text">Настройки камеры</string>
+    <string name="settings_camera_ip_address_text">ip-адрес главной камеры</string>
+    <string name="settings_ip_address">Введите ip-адрес</string>
+    <string name="settings_port">Введите порт</string>
+    <string name="settings_camera_port_text">Порт главной камеры</string>
+    <string name="settings_camera_mode">Режим сканирования</string>
+    <string name="settings_printer_text">Настройки принтера</string>
+    <string name="settings_printer_ip_address_text">ip-адресс принтера</string>
+    <string name="settings_printer_port_text">Порт принтера</string>
+    <string name="settings_printer_line">Принтер на линии</string>
+    <string name="settings_server_text">Настройки терминала</string>
+    <string name="settings_name_terminal_text">Название терминала:\n%1s</string>
+    <string name="settings_server_life_time_text">Время жизни кода в днях</string>
+    <string name="settings_server_life_time_edit">Введите число</string>
+    <string name="settings_workshop_text">Выберан цех: %1s</string>
+    <string name="settings_line_text">Выберана линия: %1s</string>
+    <string name="settings_button_save">Сохранить настройки</string>
+    <string name="settings_button_update_data">Обновить базу данных</string>
+
+</resources>
