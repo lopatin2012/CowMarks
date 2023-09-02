@@ -64,7 +64,7 @@ class OneCodeCheck
         val jsonAndDate = JsonAndDate(context)
 
         // Актуализация счётчика
-        globalVariables.setCounter(codeDB.getCodes(gtin, jobWork, party).size.toString())
+        globalVariables.setCounter(codeDB.getCodes(gtin, jobWork, party).distinct().size.toString())
         factoryCounter = globalVariables.getCounter().toInt()
         activity.runOnUiThread {
             textCounter.text = factoryCounter.toString()

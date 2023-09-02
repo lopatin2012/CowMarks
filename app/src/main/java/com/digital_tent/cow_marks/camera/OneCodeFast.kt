@@ -57,13 +57,13 @@ class OneCodeFast(
         // Gtin
         val gtin: String = globalVariables.getGtinWork()
         // Задание
-        val jobWork: String = globalVariables.getJobWork()
+        val job: String = globalVariables.getJobWork()
 
         // Регулярное выражение
         val jsonAndDate = JsonAndDate(context)
 
         // Актуализация счётчика
-        globalVariables.setCounter(codeDB.getCodes(gtin, jobWork, party).size.toString())
+        globalVariables.setCounter(codeDB.getCodes(gtin, job, party).distinct().size.toString())
         factoryCounter = globalVariables.getCounter().toInt()
         activity.runOnUiThread {
             textCounter.text = factoryCounter.toString()
@@ -100,14 +100,8 @@ class OneCodeFast(
                         for (code in codesDataMatrix) {
                             // Если код не соответствует заданию, то красный экран
                             if (!code.contains(gtin)) {
-                                CodeDB.getDB(context).codeDao().deleteCodeServer(code)
                                 activity.runOnUiThread {
                                     frameColor.setBackgroundColor(Color.RED)
-                                }
-                                // Если код уже есть в базе, то голубой экран
-                            } else if (codeDB.hasCode(code)) {
-                                activity.runOnUiThread {
-                                    frameColor.setBackgroundColor(Color.CYAN)
                                 }
                             } else {
                                 codeDB.addCode(
@@ -116,7 +110,7 @@ class OneCodeFast(
                                         code = code,
                                         date = date,
                                         party = party,
-                                        job = jobWork,
+                                        job = job,
                                         time = System.currentTimeMillis(),
                                         printer = 0,
                                         valid = 1

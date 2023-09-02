@@ -18,6 +18,7 @@ import com.digital_tent.cow_marks.R
 import com.digital_tent.cow_marks.databinding.FragmentSettingsBinding
 import com.digital_tent.cow_marks.db.WorkshopDB
 import com.digital_tent.cow_marks.db.WorkshopDao
+import com.digital_tent.cow_marks.retrofit.WorkshopsJson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -43,6 +44,7 @@ class FragmentSettings(private val workshopDB: WorkshopDao) : Fragment() {
     // Камера
     private lateinit var cameraIp: EditText
     private lateinit var cameraPort: EditText
+    private lateinit var cameraModeText: TextView
     private lateinit var cameraMode: Spinner
 
     // Принтер
@@ -75,6 +77,7 @@ class FragmentSettings(private val workshopDB: WorkshopDao) : Fragment() {
         // Камера
         cameraIp = binding.settingsCameraIpAddressEdit
         cameraPort = binding.settingsCameraPortEdit
+        cameraModeText = binding.settingsCameraModeText
         cameraMode = binding.settingsCameraModeList
         // Принтер
         printerIp = binding.settingsPrinterIpAddressEdit
@@ -93,6 +96,7 @@ class FragmentSettings(private val workshopDB: WorkshopDao) : Fragment() {
         // Камера
         cameraIp.setText(globalVariables.getCameraIp())
         cameraPort.setText(globalVariables.getCameraPort().toString())
+        cameraModeText.text = globalVariables.getScanningMode()
         // Принтер
         printerIp.setText(globalVariables.getPrinterIp())
         printerPort.setText(globalVariables.getPrinterPort().toString())
@@ -148,6 +152,8 @@ class FragmentSettings(private val workshopDB: WorkshopDao) : Fragment() {
             // Камера
             globalVariables.setCameraIp(cameraIp.text.toString())
             globalVariables.setCameraPort(cameraPort.text.toString().toInt())
+            globalVariables.setScanningMode(cameraMode.selectedItem.toString())
+            cameraModeText.text = resources.getString(R.string.settings_camera_mode_text, globalVariables.getScanningMode())
             // Принтер
             globalVariables.setPrinterIp(printerIp.text.toString())
             globalVariables.setPrinterPort(printerPort.text.toString().toInt())
@@ -166,6 +172,12 @@ class FragmentSettings(private val workshopDB: WorkshopDao) : Fragment() {
             globalVariables.setLine(lineList.selectedItem.toString())
             // Уведомление о выполненной операции
             Toast.makeText(requireContext(), "Настройки сохранены", Toast.LENGTH_SHORT).show()
+        }
+
+        // Обновление базы данных продуктов, линий и цехов
+        buttonUpdate.setOnClickListener {
+            WorkshopsJson(requireActivity()).connect()
+            Toast.makeText(requireContext(), "База данных обновлена", Toast.LENGTH_SHORT).show()
         }
     }
 

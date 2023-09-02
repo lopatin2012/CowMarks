@@ -59,13 +59,13 @@ class OneCode(
         // Gtin
         val gtin: String = globalVariables.getGtinWork()
         // Задание
-        val jobWork: String = globalVariables.getJobWork()
+        val job: String = globalVariables.getJobWork()
 
         // Регулярное выражение
         val jsonAndDate = JsonAndDate(context)
 
         // Актуализация счётчика
-        globalVariables.setCounter(codeDB.getCodes(gtin, jobWork, party).size.toString())
+        globalVariables.setCounter(codeDB.getCodes(gtin, job, party).distinct().size.toString())
         factoryCounter = globalVariables.getCounter().toInt()
         activity.runOnUiThread {
             textCounter.text = factoryCounter.toString()
@@ -112,7 +112,7 @@ class OneCode(
                                     code = code,
                                     date = date,
                                     party = party,
-                                    job = jobWork,
+                                    job = job,
                                     time = currentTimeMillis(),
                                     printer = 0,
                                     valid = 1
@@ -142,22 +142,22 @@ class OneCode(
                             // Код не соответствует заданию
                             if (!code.contains(gtin)) {
                                 factoryCounter -= 1
-                                CodeDB.getDB(context).codeDao().deleteCodeServer(code)
+                                CodeDB.getDB(context).codeDao().deleteCodeServer(code, party, job)
                                 activity.runOnUiThread {
                                     textCounter.text = factoryCounter.toString()
                                     frameColor.setBackgroundColor(Color.RED)
                                 }
-                            } else if (CodeDB.getDB(context).codeDao().duplicates(code, jobWork)) {
+                            } else if (CodeDB.getDB(context).codeDao().duplicates(code, job)) {
 //                           Log.d(TAG, "run: Код не соответствует заданию")
 //                                Дубль кода
-                            CodeDB.getDB(context).codeDao().deleteCodeServer(code)
+                            CodeDB.getDB(context).codeDao().deleteCodeServer(code, party, job)
                             codeDB.addCode(
                                 Code(
                                     id = null,
                                     code = code,
                                     date = date,
                                     party = party,
-                                    job = jobWork,
+                                    job = job,
                                     time = currentTimeMillis(),
                                     printer = 0,
                                     valid = 1

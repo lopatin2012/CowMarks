@@ -19,8 +19,8 @@ interface CodeDao {
     fun duplicates(code: String, job: String): Boolean
 
     // Удалить полученный код от Сервера
-    @Query("DELETE FROM codes WHERE code = :code")
-    fun deleteCodeServer(code: String)
+    @Query("DELETE FROM codes WHERE code = :code AND party =:party AND job =:job")
+    fun deleteCodeServer(code: String, party: String, job: String)
 
     // Устраняем валидацию кода
     @Query("UPDATE codes SET valid = 0 WHERE code =:code")

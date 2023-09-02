@@ -117,7 +117,7 @@ class MainActivity : AppCompatActivity() {
             true
         }
         ServerForTSD(this@MainActivity, globalVariables).start()
-        WorkshopsJson(this@MainActivity).connect()
+//        WorkshopsJson(this@MainActivity).connect()
         setContentView(binding.root)
     }
 

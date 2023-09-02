@@ -56,18 +56,10 @@ class GlobalVariables: Application() {
     fun getScanningGtin(): Boolean {
         return sharedPreferences.getBoolean("scanning_gtin", false)
     }
+    // Сохранить флаг сканирования по gtin
     fun setScanningGtin(scanningGtin: Boolean) {
         editor.putBoolean("scanning_gtin", false)
         editor.apply()
-    }
-    //------------
-    // Получить поток сканирования
-    fun getScanCodeThread(): Thread {
-        return scanCodeThread
-    }
-    // Сохранить поток сканирования (? - проверка на null)
-    fun setScanCodeThread(scanCodeThread: Thread?) {
-        this.scanCodeThread = scanCodeThread!!
     }
     // Получать флаг сканирования
     fun getScanning(): Boolean {
@@ -76,6 +68,15 @@ class GlobalVariables: Application() {
     // Сохранить флаг сканирования
     fun setScanning(scanning: Boolean) {
         editor.putBoolean("scanning", scanning)
+        editor.apply()
+    }
+    // Получить режим сканирования
+    fun getScanningMode(): String {
+        return sharedPreferences.getString("scanning_mode", "Проверка")?: ""
+    }
+    // Сохранить режим сканирования
+    fun setScanningMode(scanningMode: String) {
+        editor.putString("scanning_mode", scanningMode)
         editor.apply()
     }
     // Параметры для принтера

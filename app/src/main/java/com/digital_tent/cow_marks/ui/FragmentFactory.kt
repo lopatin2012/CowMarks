@@ -17,6 +17,7 @@ import com.digital_tent.cow_marks.MainActivity
 import com.digital_tent.cow_marks.R
 import com.digital_tent.cow_marks.camera.OneScanner
 import com.digital_tent.cow_marks.camera.OneScannerCheck
+import com.digital_tent.cow_marks.camera.OneScannerFast
 import com.digital_tent.cow_marks.databinding.ActivityMainBinding
 import com.digital_tent.cow_marks.databinding.FragmentFactoryBinding
 import com.digital_tent.cow_marks.db.CodeDao
@@ -115,7 +116,7 @@ class FragmentFactory(
                 gtinWork = globalVariables.getGtinWork()
                 jobWork = globalVariables.getJobWork()
                 globalVariables.setCounter(withContext(Dispatchers.IO) {
-                    codeDB.getCodes(gtinWork, jobWork, partyWork).size.toString()
+                    codeDB.getCodes(gtinWork, jobWork, partyWork).distinct().size.toString()
                 })
                 binding.factoryCounter.text = globalVariables.getCounter()
                 activity?.runOnUiThread {
@@ -142,7 +143,7 @@ class FragmentFactory(
                         gtinWork,
                         jobWork,
                         partyWork
-                    )
+                    ).distinct()
                 }
                 terminalNameFile = globalVariables.getTerminalName()
                 workshopNameFile = globalVariables.getWorkshop()
@@ -212,12 +213,22 @@ class FragmentFactory(
 
     override fun onResume() {
         super.onResume()
-        OneScannerCheck.startScan(requireContext(), requireActivity(), globalVariables, binding)
+        globalVariables = requireContext().applicationContext as GlobalVariables
+        when (globalVariables.getScanningMode()) {
+            "Проверка" -> OneScannerCheck.startScan(requireContext(), requireActivity(), globalVariables, binding)
+            "Добавление" -> OneScanner.startScan(requireContext(), requireActivity(), globalVariables, binding)
+            else -> OneScannerFast.startScan(requireContext(), requireActivity(), globalVariables, binding)
+        }
     }
 
     override fun onPause() {
         super.onPause()
-        OneScannerCheck.stopScan(globalVariables)
+        globalVariables = requireContext().applicationContext as GlobalVariables
+        when (globalVariables.getScanningMode()) {
+            "Проверка" -> OneScannerCheck.stopScan(globalVariables)
+            "Добавление" -> OneScanner.stopScan(globalVariables)
+            else -> OneScannerFast.stopScan(globalVariables)
+        }
     }
 
     override fun onDestroyView() {
