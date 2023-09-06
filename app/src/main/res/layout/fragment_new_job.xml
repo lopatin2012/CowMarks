@@ -57,6 +57,7 @@
             android:digits=".0123456789"
             android:maxLength="8"
             android:hint="@string/new_job_date_edit"
+            android:imeOptions="actionDone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/new_job_date_text"
@@ -88,6 +89,7 @@
             android:inputType="number"
             android:digits=".0123456789"
             android:maxLength="8"
+            android:imeOptions="actionDone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/new_job_party_text"
@@ -130,6 +132,7 @@
             android:gravity="center"
             android:hint="@string/new_job_plan_edit"
             android:inputType="number"
+            android:imeOptions="actionDone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/new_job_plan_text" />
@@ -145,6 +148,7 @@
             android:gravity="center"
             android:hint="@string/new_job_codes_to_the_printer_edit"
             android:inputType="number"
+            android:imeOptions="actionDone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/new_job_codes_to_the_printer_text" />
@@ -152,11 +156,25 @@
         <Button
             android:id="@+id/new_job_button_create"
             android:layout_width="wrap_content"
-            android:layout_height="48dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
             android:layout_marginBottom="50dp"
             android:text="@string/new_job_button_create"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/new_job_faq"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginBottom="32dp"
+            android:gravity="center"
+            android:text="@string/new_job_faq"
+            android:textColor="@color/black"
+            app:layout_constraintBottom_toTopOf="@+id/new_job_button_create"
             app:layout_constraintStart_toStartOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

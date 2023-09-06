@@ -1,6 +1,7 @@
 package com.digital_tent.cow_marks.ui
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -168,8 +169,11 @@ class FragmentSettings(private val workshopDB: WorkshopDao) : Fragment() {
             globalVariables.setLifeCode(lifeCode.text.toString().toInt())
             // Цех
             globalVariables.setWorkshop(workshopList.selectedItem.toString())
+            workshopName.text = resources.getString(R.string.settings_workshop_text, globalVariables.getWorkshop())
+
             // Линия
             globalVariables.setLine(lineList.selectedItem.toString())
+            lineName.text = resources.getString(R.string.settings_line_text, globalVariables.getLine())
             // Уведомление о выполненной операции
             Toast.makeText(requireContext(), "Настройки сохранены", Toast.LENGTH_SHORT).show()
         }
@@ -191,6 +195,7 @@ class FragmentSettings(private val workshopDB: WorkshopDao) : Fragment() {
                 ArrayAdapter(requireActivity(), android.R.layout.simple_list_item_1, lineItems)
             lineList.adapter = adapter
             adapter.notifyDataSetChanged()
+            Log.e("Линии", lineItems.toString())
         }
     }
 

@@ -117,7 +117,7 @@
             android:id="@+id/factory_button_start_printing"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="300dp"
+            android:layout_marginStart="150dp"
             android:layout_marginTop="16dp"
             android:text="@string/factory_button_start_printing"
             app:layout_constraintStart_toStartOf="parent"

@@ -1,12 +1,16 @@
 package com.digital_tent.cow_marks.ui
 
+import android.app.Activity
+import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
+import android.view.KeyEvent
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
@@ -14,13 +18,15 @@ import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import com.digital_tent.cow_marks.GlobalVariables
 import com.digital_tent.cow_marks.databinding.FragmentNewJobBinding
-import com.digital_tent.cow_marks.db.CodeDB
 import com.digital_tent.cow_marks.db.CodeDao
 import com.digital_tent.cow_marks.db.ProductDao
 import com.digital_tent.cow_marks.json.JsonAndDate
 import com.digital_tent.cow_marks.list_job.Job
+import com.digital_tent.cow_marks.list_job.JobAdapter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -30,7 +36,8 @@ import java.io.File
 
 class FragmentNewJob(
     private val codeDB: CodeDao,
-    private val productDB: ProductDao
+    private val productDB: ProductDao,
+    private var supportFragmentManager: FragmentManager
 ) : Fragment() {
     // Список продуктов
     private lateinit var productList: Spinner
@@ -41,6 +48,7 @@ class FragmentNewJob(
 
     // Кнопка создания задания
     private lateinit var buttonCreateJob: Button
+    private var colorButton = true
 
     // Гарантированные поля для задания
     private lateinit var date: EditText
@@ -99,7 +107,6 @@ class FragmentNewJob(
         printerEdit = binding.newJobCodesToThePrinterEdit
         // Дата маркировки
         date = binding.newJobDateEdit
-        date.setText(globalVariables.getDateWork())
         // Партия маркировки
         party = binding.newJobPartyEdit
         // План производства
@@ -117,8 +124,11 @@ class FragmentNewJob(
         super.onViewCreated(view, savedInstanceState)
         // Инициализация глобальных переменных
         globalVariables = requireContext().applicationContext as GlobalVariables
-        jsonAndDate = JsonAndDate(requireContext())
 
+//        setupKeyboardHideOnEnterPress(date, requireActivity())
+//        setupKeyboardHideOnEnterPress(party, requireActivity())
+//        setupKeyboardHideOnEnterPress(plan, requireActivity())
+        date.setText(globalVariables.getDateWork())
         // Список продуктов
         CoroutineScope(Dispatchers.Main).launch {
             productItems = withContext(Dispatchers.IO) {
@@ -131,6 +141,21 @@ class FragmentNewJob(
         }
 
         buttonCreateJob.setOnClickListener {
+            jsonAndDate = JsonAndDate(requireContext())
+            val adapterJob = JobAdapter(
+                globalVariables,
+                globalVariables.getJobsList(),
+                requireContext(),
+                codeDB,
+                supportFragmentManager
+            )
+            // Изменение цвета кнопки после создания задания
+            if (colorButton) {
+                buttonCreateJob.setBackgroundColor(Color.GREEN)
+            } else {
+                buttonCreateJob.setBackgroundColor(Color.YELLOW)
+            }
+            colorButton = !colorButton
 
             // Настройка переменных для нового задания
             jobWork = globalVariables.getProductJob()
@@ -176,8 +201,8 @@ class FragmentNewJob(
                     plan.text.toString()
                 }
                 jobPathFile = "${jobWorkshop}_${jobLine}_${jobGtin}_0_${jobParty}_${
-                    jobDate
-                }_${jobWork}.json"
+                    jobParty
+                }_${jobWork}_${jobPlan}_${jobStatus}.json"
                 // Коды на принтер
                 jobCodesForPrinter = if (globalVariables.getPrinterLine()) {
                     if (printerEdit.text.toString() == "") {
@@ -207,9 +232,11 @@ class FragmentNewJob(
                     jobPlan,
                     jobCodesForPrinter,
                     jobPathFile,
+                    deleteStatus = false,
                     jobStatus,
                     jobColor
                 )
+                adapterJob.removeJobWithSmallestJobValue()
                 jobList = globalVariables.getJobsList()
                 val updateJobList = jobList.toMutableList()
                 updateJobList.add(0, job)
@@ -250,24 +277,49 @@ class FragmentNewJob(
                 requireActivity().runOnUiThread{
                     Toast.makeText(requireContext(), "Задание создано", Toast.LENGTH_SHORT).show()
                 }
+                // Увеличение счётчика Задания в глобальной переменной
+                globalVariables.setProductJob((globalVariables.getProductJob() + 1))
+                Toast.makeText(
+                    requireContext().applicationContext,
+                    "Задание создано",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
-
-        // Увеличение счётчика Задания в глобальной переменной
-        globalVariables.setProductJob((jobWork + 1))
-        Toast.makeText(
-            requireContext().applicationContext,
-            "Задание создано",
-            Toast.LENGTH_SHORT
-        ).show()
     }
 
+    fun setupKeyboardHideOnEnterPress(editText: EditText, activity: Activity) {
+        editText.setOnEditorActionListener { textView, actionId, event ->
+            if (actionId == EditorInfo.IME_ACTION_DONE ||
+                (event?.action == KeyEvent.ACTION_DOWN &&
+                        event.keyCode == KeyEvent.KEYCODE_ENTER)
+            ) {
+                hideKeyboard(activity)
+                true
+            } else {
+                false
+            }
+        }
+    }
+
+    fun hideKeyboard(activity: Activity) {
+        //Находим View с фокусом, так мы сможем получить правильный window token
+        //Если такого View нет, то создадим одно, это для получения window token из него
+        val view = activity.currentFocus ?: View(activity)
+        val inputMethod =
+            activity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethod.hideSoftInputFromWindow(
+            view.windowToken,
+            InputMethodManager.SHOW_IMPLICIT
+        )
+    }
 
     companion object {
         @JvmStatic
         fun newInstance(
             codeDB: CodeDao,
             productDB: ProductDao,
-        ) = FragmentNewJob(codeDB, productDB)
+            supportFragmentManager: FragmentManager
+        ) = FragmentNewJob(codeDB, productDB, supportFragmentManager)
     }
 }

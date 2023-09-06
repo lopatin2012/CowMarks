@@ -13,6 +13,7 @@ data class Job (
     var plan: String, // План производства
     var numberOfTheCodes: String, // Количество кодов для печати
     var file: String, // Ссылка на файл json
+    var deleteStatus: Boolean, // Проверка на удаление
     var status: String, // Статус задания
     var color: Int // Цвет для статуса задания
 

@@ -2,6 +2,7 @@ package com.digital_tent.cow_marks.ui
 
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -24,11 +25,13 @@ import com.digital_tent.cow_marks.db.CodeDao
 import com.digital_tent.cow_marks.json.JsonAndDate
 import com.digital_tent.cow_marks.list_job.Job
 import com.digital_tent.cow_marks.list_job.JobAdapter
+import com.digital_tent.cow_marks.printer.CodePrinting
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.math.log
 
 class FragmentFactory(
     private var globalVariables: GlobalVariables,
@@ -39,11 +42,16 @@ class FragmentFactory(
     // Кнопка завершения партии
     private lateinit var buttonEnd: Button
 
+    // Кнопка печати
+    private lateinit var buttonPrinter: Button
+
     // Кнопка синхронизации кодов
     private lateinit var buttonReset: ImageButton
 
     // Класс для создания json файлов
     private lateinit var jsonAndDate: JsonAndDate
+    // Класс для взаимодействия с принтером VideoJet
+    private lateinit var codePrinting: CodePrinting
 
     // Параметры задания. В основном для Json
     // Часть функционала есть в сканировании
@@ -63,7 +71,11 @@ class FragmentFactory(
     private lateinit var planWork: String
     private lateinit var statusWork: String
 
+    // Биндинг этого фрагмента
     private lateinit var binding: FragmentFactoryBinding
+
+    // Взаимодействие с принтером
+    private lateinit var listTemplates: List<String>
 
 
     override fun onCreateView(
@@ -97,10 +109,12 @@ class FragmentFactory(
             binding.factoryPlan.text =
                 resources.getString(R.string.factory_plan, globalVariables.getPlanWork())
             binding.factoryDate.text =
-                resources.getString(R.string.factory_date, globalVariables.getDateWork())
+                resources.getString(R.string.factory_date, globalVariables.getDateFullWork())
             binding.factoryParty.text =
                 resources.getString(R.string.factory_party, globalVariables.getPartyWork())
         }
+        // Кнопки
+        buttonPrinter = binding.factoryButtonStartPrinting
         buttonEnd = binding.factoryButtonEnd
         buttonEnd.isEnabled = false
         buttonReset = binding.factoryButtonReset
@@ -124,6 +138,16 @@ class FragmentFactory(
                     buttonReset.isEnabled = true
                     buttonEnd.isEnabled = true
                 }
+            }
+        }
+
+        // Кнопка запуска печати на принтере
+        buttonPrinter.setOnClickListener {
+            CoroutineScope(Dispatchers.IO).launch {
+                codePrinting = CodePrinting(globalVariables, binding)
+                listTemplates = codePrinting.getPrinterTemplates()
+                codePrinting.setJobSelect(listTemplates[0])
+                Log.e("На принтере шаблоны: ", listTemplates.toString())
             }
         }
 
@@ -184,10 +208,11 @@ class FragmentFactory(
                     listCodeWork.size.toString(),
                     "Завершено",
                     Color.GRAY,
-                    jobPathFile
+                    jobPathFile,
+                    deleteStatus = false
                 )
                 activity?.runOnUiThread {
-                    buttonReset.isEnabled = false
+                    buttonReset.isEnabled = true
                     buttonReset.setBackgroundColor(Color.GREEN)
                     buttonEnd.text = "Партия завершена"
                     Toast.makeText(requireContext(), "Партия завершена", Toast.LENGTH_SHORT).show()
@@ -219,6 +244,7 @@ class FragmentFactory(
             "Добавление" -> OneScanner.startScan(requireContext(), requireActivity(), globalVariables, binding)
             else -> OneScannerFast.startScan(requireContext(), requireActivity(), globalVariables, binding)
         }
+        globalVariables.setScanning(true)
     }
 
     override fun onPause() {
@@ -229,6 +255,7 @@ class FragmentFactory(
             "Добавление" -> OneScanner.stopScan(globalVariables)
             else -> OneScannerFast.stopScan(globalVariables)
         }
+        globalVariables.setScanning(false)
     }
 
     override fun onDestroyView() {

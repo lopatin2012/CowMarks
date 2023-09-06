@@ -76,7 +76,7 @@ class MainActivity : AppCompatActivity() {
                         .beginTransaction()
                         .replace(
                             R.id.fragment_main_menu,
-                            FragmentNewJob.newInstance(codeDB, productDB)
+                            FragmentNewJob.newInstance(codeDB, productDB, supportFragmentManager)
                         )
                         .commit()
                     Log.d(TAG, "new_job: нажата кнопка")

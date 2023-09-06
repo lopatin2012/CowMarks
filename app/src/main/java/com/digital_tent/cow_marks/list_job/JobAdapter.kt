@@ -7,8 +7,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.constraintlayout.helper.widget.MotionEffect
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
 import com.digital_tent.cow_marks.GlobalVariables
@@ -24,16 +22,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import okhttp3.Call
-import okhttp3.Callback
-import okhttp3.MediaType
-import okhttp3.MultipartBody
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody
-import okhttp3.Response
-import java.io.File
-import java.io.IOException
 
 
 class JobAdapter(
@@ -70,6 +58,13 @@ class JobAdapter(
             listJobStatusText.text =
                 root.context.getString(R.string.list_job_status_text, job.job, job.status)
             listJobColor.setBackgroundColor(job.color)
+            // Блокировка кнопок, если задание помечено на удаление
+            if (job.deleteStatus) {
+                listJobButtonOpen.isEnabled = false
+                listJobButtonDelete.isEnabled = false
+                listJobButtonDelete.setBackgroundColor(Color.MAGENTA)
+                listJobButtonClose.isEnabled = false
+            }
             listJobButtonOpen.setOnClickListener {
                 Log.e(TAG, "Задание открыто")
                 val position: Int = adapterPosition
@@ -94,7 +89,8 @@ class JobAdapter(
                         currentJob.counter,
                         statusOpen,
                         statusOpenColor,
-                        currentJob.file
+                        currentJob.file,
+                        deleteStatus = false
                     )
                     for (i in jobList.indices) {
                         val unitJob: Job = jobList[i]
@@ -104,7 +100,8 @@ class JobAdapter(
                                 currentJob.counter,
                                 "Открыто",
                                 Color.YELLOW,
-                                currentJob.file
+                                currentJob.file,
+                                deleteStatus = false
                             )
                         }
                     }
@@ -123,7 +120,7 @@ class JobAdapter(
                                 currentJob.gtin,
                                 currentJob.job,
                                 currentJob.party
-                            ).size.toString()
+                            ).distinct().size.toString()
                         }
                         val editFile = jsonAndDate.renameReport(currentJob.file)
 //                        Log.e(TAG, "bind: $counter")
@@ -132,7 +129,34 @@ class JobAdapter(
                             counter,
                             statusOpen,
                             statusOpenColor,
-                            editFile
+                            editFile,
+                            deleteStatus = false
+                        )
+                        GlobalScope.launch(Dispatchers.IO) {
+                            jsonAndDate.uploadFileToServer(editFile)
+                        }
+                    }
+                }
+            }
+            listJobButtonDelete.setOnClickListener {
+
+                val position: Int = adapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    CoroutineScope(Dispatchers.Main).launch {
+                        val currentJob = jobList[position]
+                        val statusOpen = "Удалено"
+                        val statusOpenColor = Color.MAGENTA
+                        val counter = currentJob.counter
+                        Log.e(TAG, "bind: ${currentJob.file}", )
+                        val editFile = jsonAndDate.renameReportDelete(currentJob.file)
+                        Log.e(TAG, "bind: $editFile")
+                        adapter.updateData(
+                            position,
+                            counter,
+                            statusOpen,
+                            statusOpenColor,
+                            editFile,
+                            deleteStatus = true
                         )
                         GlobalScope.launch(Dispatchers.IO) {
                             jsonAndDate.uploadFileToServer(editFile)
@@ -160,8 +184,9 @@ class JobAdapter(
     }
 
     // Удаление одного задания
-    fun removeItem(position: Int) {
+    private fun removeItem(position: Int) {
         if (position >= 0 && position < jobList.size) {
+            globalVariables.getJobsList()
             val updatedList = jobList.toMutableList()
             updatedList.removeAt(position)
             globalVariables.setJobsList(updatedList)
@@ -169,13 +194,33 @@ class JobAdapter(
         }
     }
 
+    fun removeJobWithSmallestJobValue() {
+        if (jobList.size >= 30) {
+            // Поиск индекса Job с наименьшим значением Job
+            var smallestJobIndex = 0
+            var smallestJobValue = Int.MAX_VALUE
+            // Поиск индекса Job с наименьшим значением Job
+            for (i in jobList.indices) {
+                val job = jobList[i]
+                val jobValue: Int = job.job.toInt()
+                Log.e(TAG, "removeJobWithSmallestJobValue: $job")
+                if (jobValue < smallestJobValue) {
+                    smallestJobValue = jobValue
+                    smallestJobIndex = i
+                }
+                removeItem(smallestJobIndex)
+            }
+        }
+    }
+
     // Обновление данных
-    fun updateData(position: Int, counter: String, status: String, color: Int, file: String) {
+    fun updateData(position: Int, counter: String, status: String, color: Int, file: String, deleteStatus: Boolean) {
         if (position >= 0 && position < jobList.size) {
             jobList[position].counter = counter
             jobList[position].status = status
             jobList[position].color = color
             jobList[position].file = file
+            jobList[position].deleteStatus = deleteStatus
             globalVariables.setJobsList(jobList)
             notifyItemChanged(position)
         }

@@ -43,7 +43,7 @@ class OneCodeFast(
     private var evenScan = true // Чётность сканирования
     private var factoryCounter = 0 // Счётчик
     private var byteReader = 0 // Двоичное представление прочитанного кода
-    private var buffer = ByteArray(4096) // Размер буфера
+    private var buffer = ByteArray(2048) // Размер буфера (примерно 55 кодов за раз)
 
     override fun run() {
         // База данных

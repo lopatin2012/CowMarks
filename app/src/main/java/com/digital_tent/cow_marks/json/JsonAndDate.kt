@@ -67,6 +67,26 @@ class JsonAndDate(val context: Context) {
         }
     }
 
+    // Переименовывание файла на удаление
+    fun renameReportDelete(name: String): String {
+
+        val fileJob = File(context.filesDir, name)
+        val edit = name.replace("Новое", "Удалено")
+        val fileEdit = File(context.filesDir, edit)
+        return try {
+            if (fileJob.renameTo(fileEdit)) {
+                edit
+            } else {
+                // Ошибка при переименовании файла
+                name
+            }
+        } catch (e: Exception) {
+            // Обработка исключения, если возникает ошибка в процессе переименования файла
+            e.printStackTrace()
+            name
+        }
+    }
+
     // турбо-чтение файла json в stream
     fun readJsonFileInputStream(inputStream: InputStream?): String {
         val stringBuilder = StringBuilder()
