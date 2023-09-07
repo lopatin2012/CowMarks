@@ -3,7 +3,6 @@ package com.digital_tent.cow_marks.ui
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,27 +10,26 @@ import android.widget.Button
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import androidx.navigation.ui.NavigationUI
+import com.datalogic.decode.configuration.ScannerProperties
+import com.datalogic.device.configuration.NumericProperty
 import com.digital_tent.cow_marks.GlobalVariables
-import com.digital_tent.cow_marks.MainActivity
 import com.digital_tent.cow_marks.R
 import com.digital_tent.cow_marks.camera.OneScanner
 import com.digital_tent.cow_marks.camera.OneScannerCheck
 import com.digital_tent.cow_marks.camera.OneScannerFast
-import com.digital_tent.cow_marks.databinding.ActivityMainBinding
 import com.digital_tent.cow_marks.databinding.FragmentFactoryBinding
 import com.digital_tent.cow_marks.db.CodeDao
 import com.digital_tent.cow_marks.json.JsonAndDate
 import com.digital_tent.cow_marks.list_job.Job
 import com.digital_tent.cow_marks.list_job.JobAdapter
 import com.digital_tent.cow_marks.printer.CodePrinting
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlin.math.log
+
 
 class FragmentFactory(
     private var globalVariables: GlobalVariables,
