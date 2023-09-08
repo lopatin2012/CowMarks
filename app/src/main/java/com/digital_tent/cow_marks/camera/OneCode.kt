@@ -294,6 +294,12 @@ class OneCode(
                             }
                         }
                     }
+                    // Актуализация счётчика
+                    globalVariables.setCounter(codeDB.getCodes(gtin, job, party).distinct().size.toString())
+                    factoryCounter = globalVariables.getCounter().toInt()
+                    activity.runOnUiThread {
+                        textCounter.text = factoryCounter.toString()
+                    }
                 }
             }
             // Не удалось подключиться к камере

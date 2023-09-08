@@ -237,6 +237,8 @@ class FragmentFactory(
         globalVariables = requireContext().applicationContext as GlobalVariables
         when (globalVariables.getTwoScanning()) {
             true -> {
+                OneScanner.startScan(requireContext(), requireActivity(), globalVariables, binding)
+                globalVariables.setScanning(true)
                 TwoScanner.startScan(requireContext(), requireActivity(), globalVariables, binding)
                 globalVariables.setScanning(true)
             }
@@ -253,6 +255,8 @@ class FragmentFactory(
         globalVariables = requireContext().applicationContext as GlobalVariables
         when (globalVariables.getTwoScanning()) {
             true -> {
+                OneScanner.stopScan(globalVariables)
+                globalVariables.setScanning(false)
                 TwoScanner.stopScan(globalVariables)
                 globalVariables.setScanning(false)
             }

@@ -74,7 +74,7 @@
     <string name="settings_camera_ip_address_text2">ip-адрес второй камеры</string>
     <string name="settings_camera_port_text2">Порт второй камеры</string>
     <string name="settings_camera_mode_text">Режим сканирования: %1s</string>
-    <string name="settings_two_scanning_text">Включить сканирование с разных CBX</string>
+    <string name="settings_two_scanning_text">Доп CBX</string>
     <string name="settings_printer_text">Настройки принтера</string>
     <string name="settings_printer_ip_address_text">ip-адресс принтера</string>
     <string name="settings_printer_port_text">Порт принтера</string>

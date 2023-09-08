@@ -264,22 +264,23 @@ class FragmentNewJob(
                 // Отправка файла для ведения статистики заданий на линии
                 jsonAndDate.uploadFileToServer(fileJson)
 
-                // Удаление устаревших кодов
-                val lifeCode = globalVariables.getLifeCode()
-                val timeExpired = System.currentTimeMillis() / 1000 - (lifeCode * 24L * 60L * 60L)
+
                 withContext(Dispatchers.IO) {
+                    // Удаление устаревших кодов
+                    val lifeCode = globalVariables.getLifeCode()
+                    val timeExpired = System.currentTimeMillis() / 1000 - (lifeCode * 24L * 60L * 60L)
                     codeDB.deleteExpiredRows(timeExpired)
+                    // Удаление устаревших файлов
+                    jsonAndDate.fileCheckerAndDelete()
                 }
-                // Удаление устаревших файлов
-                jsonAndDate.fileCheckerAndDelete()
 //                println(lifeCode)
 //                println(timeExpired)
 //                println(System.currentTimeMillis() / 1000)
 //                println(System.currentTimeMillis() / 1000 - (lifeCode * 24L * 60L * 60L))
 //                println(codeDelete)
-                requireActivity().runOnUiThread{
-                    Toast.makeText(requireContext(), "Задание создано", Toast.LENGTH_SHORT).show()
-                }
+//                requireActivity().runOnUiThread{
+//                    Toast.makeText(requireContext(), "Задание создано", Toast.LENGTH_SHORT).show()
+//                }
                 // Увеличение счётчика Задания в глобальной переменной
                 globalVariables.setProductJob((globalVariables.getProductJob() + 1))
                 // Отображение уведомления о созданном задании
@@ -288,20 +289,6 @@ class FragmentNewJob(
 //                    "Задание создано",
 //                    Toast.LENGTH_SHORT
 //                ).show()
-            }
-        }
-    }
-
-    fun setupKeyboardHideOnEnterPress(editText: EditText, activity: Activity) {
-        editText.setOnEditorActionListener { textView, actionId, event ->
-            if (actionId == EditorInfo.IME_ACTION_DONE ||
-                (event?.action == KeyEvent.ACTION_DOWN &&
-                        event.keyCode == KeyEvent.KEYCODE_ENTER)
-            ) {
-                hideKeyboard(activity)
-                true
-            } else {
-                false
             }
         }
     }

@@ -13,7 +13,7 @@
         <LinearLayout
             android:id="@+id/linearLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="300dp"
             android:gravity="center"
             android:orientation="horizontal"
             android:paddingTop="10dp"
@@ -56,11 +56,11 @@
                         android:layout_width="match_parent"
                         android:layout_height="48dp"
                         android:autofillHints=""
+                        android:digits=".0123456789"
                         android:ems="14"
                         android:gravity="center"
                         android:hint="@string/settings_ip_address"
                         android:inputType="number"
-                        android:digits=".0123456789"
                         android:textSize="14sp" />
 
                     <TextView
@@ -77,11 +77,11 @@
                         android:layout_width="match_parent"
                         android:layout_height="48dp"
                         android:autofillHints=""
+                        android:digits="0123456789"
                         android:ems="6"
                         android:gravity="center"
                         android:hint="@string/settings_port"
                         android:inputType="number"
-                        android:digits="0123456789"
                         android:text=""
                         android:textSize="14sp" />
 
@@ -102,7 +102,7 @@
                     <TextView
                         android:id="@+id/settings_two_scanning_text"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:gravity="center"
                         android:paddingTop="20dp"
                         android:text="@string/settings_two_scanning_text"
@@ -128,11 +128,11 @@
                         android:layout_width="match_parent"
                         android:layout_height="48dp"
                         android:autofillHints=""
+                        android:digits=".0123456789"
                         android:ems="14"
                         android:gravity="center"
                         android:hint="@string/settings_ip_address"
                         android:inputType="number"
-                        android:digits=".0123456789"
                         android:textSize="14sp" />
 
                     <TextView
@@ -149,14 +149,13 @@
                         android:layout_width="match_parent"
                         android:layout_height="48dp"
                         android:autofillHints=""
+                        android:digits="0123456789"
                         android:ems="6"
                         android:gravity="center"
                         android:hint="@string/settings_port"
                         android:inputType="number"
-                        android:digits="0123456789"
                         android:text=""
                         android:textSize="14sp" />
-
 
 
                 </LinearLayout>
