@@ -99,6 +99,65 @@
                         android:layout_width="wrap_content"
                         android:layout_height="48dp" />
 
+                    <TextView
+                        android:id="@+id/settings_two_scanning_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:paddingTop="20dp"
+                        android:text="@string/settings_two_scanning_text"
+                        android:textSize="14sp" />
+
+                    <CheckBox
+                        android:id="@+id/settings_two_scanning_flag"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="" />
+
+                    <TextView
+                        android:id="@+id/settings_camera_ip_address_text2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:paddingTop="10dp"
+                        android:text="@string/settings_camera_ip_address_text2"
+                        android:textSize="14sp" />
+
+                    <EditText
+                        android:id="@+id/settings_camera_ip_address_edit2"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:autofillHints=""
+                        android:ems="14"
+                        android:gravity="center"
+                        android:hint="@string/settings_ip_address"
+                        android:inputType="number"
+                        android:digits=".0123456789"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/settings_camera_port_text2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:paddingTop="20dp"
+                        android:text="@string/settings_camera_port_text2"
+                        android:textSize="14sp" />
+
+                    <EditText
+                        android:id="@+id/settings_camera_port_edit2"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:autofillHints=""
+                        android:ems="6"
+                        android:gravity="center"
+                        android:hint="@string/settings_port"
+                        android:inputType="number"
+                        android:digits="0123456789"
+                        android:text=""
+                        android:textSize="14sp" />
+
+
 
                 </LinearLayout>
             </ScrollView>
@@ -137,11 +196,11 @@
                         android:layout_width="match_parent"
                         android:layout_height="48dp"
                         android:autofillHints=""
+                        android:digits=".0123456789"
                         android:ems="14"
                         android:gravity="center"
                         android:hint="@string/settings_ip_address"
                         android:inputType="number"
-                        android:digits=".0123456789"
                         android:text=""
                         android:textSize="14sp" />
 
@@ -159,11 +218,11 @@
                         android:layout_width="match_parent"
                         android:layout_height="48dp"
                         android:autofillHints=""
+                        android:digits="0123456789"
                         android:ems="6"
                         android:gravity="center"
                         android:hint="@string/settings_port"
                         android:inputType="number"
-                        android:digits="0123456789"
                         android:text=""
                         android:textSize="14sp" />
 

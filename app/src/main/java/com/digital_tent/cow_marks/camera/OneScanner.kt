@@ -6,7 +6,6 @@ import android.content.Context
 import com.digital_tent.cow_marks.GlobalVariables
 import com.digital_tent.cow_marks.databinding.FragmentFactoryBinding
 
-// Изначальное добавление кодов в базу, а затем проверка в базе
 // Один из способов использовать только один поток на фоне
 object OneScanner {
     @SuppressLint("StaticFieldLeak")

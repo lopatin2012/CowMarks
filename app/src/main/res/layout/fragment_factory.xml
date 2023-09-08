@@ -54,17 +54,32 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
+            android:id="@+id/factory_notification"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="16dp"
+            android:gravity="center"
+            android:text="@string/factory_notification"
+            android:textColor="@color/black"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toTopOf="@+id/factory_product"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/factory_job" />
+
+        <TextView
             android:id="@+id/factory_product"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
-            android:layout_marginTop="32dp"
+            android:layout_marginTop="48dp"
             android:layout_marginEnd="24dp"
             android:gravity="center"
+            android:lineSpacingExtra="8dp"
+            android:text="@string/factory_product"
             android:textColor="@color/black"
             android:textSize="16sp"
-            android:text="@string/factory_product"
-            android:lineSpacingExtra="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/factory_job" />
@@ -101,7 +116,7 @@
                 android:layout_height="match_parent"
                 android:gravity="center"
                 android:textColor="@color/black"
-                android:textSize="80sp"
+                android:textSize="100sp"
                 android:text="@string/factory_counter" />
 
             <ImageButton

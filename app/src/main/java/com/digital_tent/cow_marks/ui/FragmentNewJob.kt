@@ -152,8 +152,11 @@ class FragmentNewJob(
             // Изменение цвета кнопки после создания задания
             if (colorButton) {
                 buttonCreateJob.setBackgroundColor(Color.GREEN)
+                buttonCreateJob.text = "Задание создано!"
             } else {
                 buttonCreateJob.setBackgroundColor(Color.YELLOW)
+                buttonCreateJob.setTextColor(Color.BLACK)
+                buttonCreateJob.text = "Создано ещё одно задание!"
             }
             colorButton = !colorButton
 
@@ -279,11 +282,12 @@ class FragmentNewJob(
                 }
                 // Увеличение счётчика Задания в глобальной переменной
                 globalVariables.setProductJob((globalVariables.getProductJob() + 1))
-                Toast.makeText(
-                    requireContext().applicationContext,
-                    "Задание создано",
-                    Toast.LENGTH_SHORT
-                ).show()
+                // Отображение уведомления о созданном задании
+//                Toast.makeText(
+//                    requireContext().applicationContext,
+//                    "Задание создано",
+//                    Toast.LENGTH_SHORT
+//                ).show()
             }
         }
     }

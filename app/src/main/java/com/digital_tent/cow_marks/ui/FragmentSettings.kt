@@ -47,6 +47,10 @@ class FragmentSettings(private val workshopDB: WorkshopDao) : Fragment() {
     private lateinit var cameraPort: EditText
     private lateinit var cameraModeText: TextView
     private lateinit var cameraMode: Spinner
+    private lateinit var cameraTwoScanning: CheckBox
+    // Вторая камера
+    private lateinit var cameraIp2: EditText
+    private lateinit var cameraPort2: EditText
 
     // Принтер
     private lateinit var printerIp: EditText
@@ -80,6 +84,10 @@ class FragmentSettings(private val workshopDB: WorkshopDao) : Fragment() {
         cameraPort = binding.settingsCameraPortEdit
         cameraModeText = binding.settingsCameraModeText
         cameraMode = binding.settingsCameraModeList
+        cameraTwoScanning = binding.settingsTwoScanningFlag
+        // Вторая камера.
+        cameraIp2 = binding.settingsCameraIpAddressEdit2
+        cameraPort2 = binding.settingsCameraPortEdit2
         // Принтер
         printerIp = binding.settingsPrinterIpAddressEdit
         printerPort = binding.settingsPrinterPortEdit
@@ -98,6 +106,10 @@ class FragmentSettings(private val workshopDB: WorkshopDao) : Fragment() {
         cameraIp.setText(globalVariables.getCameraIp())
         cameraPort.setText(globalVariables.getCameraPort().toString())
         cameraModeText.text = globalVariables.getScanningMode()
+        cameraTwoScanning.isChecked = globalVariables.getTwoScanning()
+        // Вторая камера
+        cameraIp2.setText(globalVariables.getCameraIp2())
+        cameraPort2.setText(globalVariables.getCameraPort2().toString())
         // Принтер
         printerIp.setText(globalVariables.getPrinterIp())
         printerPort.setText(globalVariables.getPrinterPort().toString())
@@ -155,6 +167,10 @@ class FragmentSettings(private val workshopDB: WorkshopDao) : Fragment() {
             globalVariables.setCameraPort(cameraPort.text.toString().toInt())
             globalVariables.setScanningMode(cameraMode.selectedItem.toString())
             cameraModeText.text = resources.getString(R.string.settings_camera_mode_text, globalVariables.getScanningMode())
+            globalVariables.setTwoScanning(cameraTwoScanning.isChecked)
+            // Вторая камера
+            globalVariables.setCameraIp2(cameraIp2.text.toString())
+            globalVariables.setCameraPor2(cameraPort2.text.toString().toInt())
             // Принтер
             globalVariables.setPrinterIp(printerIp.text.toString())
             globalVariables.setPrinterPort(printerPort.text.toString().toInt())

@@ -60,10 +60,10 @@ class JobAdapter(
             listJobColor.setBackgroundColor(job.color)
             // Блокировка кнопок, если задание помечено на удаление
             if (job.deleteStatus) {
-                listJobButtonOpen.isEnabled = false
-                listJobButtonDelete.isEnabled = false
+//                listJobButtonOpen.isEnabled = false
+//                listJobButtonDelete.isEnabled = false
                 listJobButtonDelete.setBackgroundColor(Color.MAGENTA)
-                listJobButtonClose.isEnabled = false
+//                listJobButtonClose.isEnabled = false
             }
             listJobButtonOpen.setOnClickListener {
                 Log.e(TAG, "Задание открыто")

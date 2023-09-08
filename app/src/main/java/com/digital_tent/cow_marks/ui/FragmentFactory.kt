@@ -12,13 +12,11 @@ import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import com.datalogic.decode.configuration.ScannerProperties
-import com.datalogic.device.configuration.NumericProperty
 import com.digital_tent.cow_marks.GlobalVariables
 import com.digital_tent.cow_marks.R
 import com.digital_tent.cow_marks.camera.OneScanner
-import com.digital_tent.cow_marks.camera.OneScannerCheck
-import com.digital_tent.cow_marks.camera.OneScannerFast
+import com.digital_tent.cow_marks.camera.TwoScanner
+import com.digital_tent.cow_marks.camera.TwoScanning
 import com.digital_tent.cow_marks.databinding.FragmentFactoryBinding
 import com.digital_tent.cow_marks.db.CodeDao
 import com.digital_tent.cow_marks.json.JsonAndDate
@@ -237,23 +235,32 @@ class FragmentFactory(
     override fun onResume() {
         super.onResume()
         globalVariables = requireContext().applicationContext as GlobalVariables
-        when (globalVariables.getScanningMode()) {
-            "Проверка" -> OneScannerCheck.startScan(requireContext(), requireActivity(), globalVariables, binding)
-            "Добавление" -> OneScanner.startScan(requireContext(), requireActivity(), globalVariables, binding)
-            else -> OneScannerFast.startScan(requireContext(), requireActivity(), globalVariables, binding)
+        when (globalVariables.getTwoScanning()) {
+            true -> {
+                TwoScanner.startScan(requireContext(), requireActivity(), globalVariables, binding)
+                globalVariables.setScanning(true)
+            }
+            false -> {
+                OneScanner.startScan(requireContext(), requireActivity(), globalVariables, binding)
+                globalVariables.setScanning(true)
+            }
         }
-        globalVariables.setScanning(true)
+
     }
 
     override fun onPause() {
         super.onPause()
         globalVariables = requireContext().applicationContext as GlobalVariables
-        when (globalVariables.getScanningMode()) {
-            "Проверка" -> OneScannerCheck.stopScan(globalVariables)
-            "Добавление" -> OneScanner.stopScan(globalVariables)
-            else -> OneScannerFast.stopScan(globalVariables)
+        when (globalVariables.getTwoScanning()) {
+            true -> {
+                TwoScanner.stopScan(globalVariables)
+                globalVariables.setScanning(false)
+            }
+            false -> {
+                OneScanner.stopScan(globalVariables)
+                globalVariables.setScanning(false)
+            }
         }
-        globalVariables.setScanning(false)
     }
 
     override fun onDestroyView() {

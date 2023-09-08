@@ -13,6 +13,7 @@
     <string name="factory_date">Дата маркировки:\n%1s</string>
     <string name="factory_job">%1s\nЗадание №%2s</string>
     <string name="factory_party">Партия:\n%1s</string>
+    <string name="factory_notification">Статус кода:</string>
     <string name="factory_product">Продукт:\n%1s</string>
     <string name="factory_plan">План производства: %1s</string>
     <string name="factory_counter">%1s</string>
@@ -52,6 +53,8 @@
     <!--Системные настройки-->
     <string name="utility_update_global_job_text">Глобальный счётчик заданий</string>
     <string name="utility_update_global_job_edit">Введите цифру</string>
+    <string name="utility_test_text">Тест камеры</string>
+    <string name="utility_test_button">Проверить камеру</string>
     <string name="utility_button_save">Сохранить настройки</string>
 
 
@@ -68,7 +71,10 @@
     <string name="settings_ip_address">Введите ip-адрес</string>
     <string name="settings_port">Введите порт</string>
     <string name="settings_camera_port_text">Порт главной камеры</string>
+    <string name="settings_camera_ip_address_text2">ip-адрес второй камеры</string>
+    <string name="settings_camera_port_text2">Порт второй камеры</string>
     <string name="settings_camera_mode_text">Режим сканирования: %1s</string>
+    <string name="settings_two_scanning_text">Включить сканирование с разных CBX</string>
     <string name="settings_printer_text">Настройки принтера</string>
     <string name="settings_printer_ip_address_text">ip-адресс принтера</string>
     <string name="settings_printer_port_text">Порт принтера</string>

@@ -6,11 +6,9 @@ import android.content.Context
 import com.digital_tent.cow_marks.GlobalVariables
 import com.digital_tent.cow_marks.databinding.FragmentFactoryBinding
 
-// Один из способов использовать только один поток на фоне
-// Проверка кода только на gtin. 1 запрос в базу только на добавление
-object OneScannerFast {
+object TwoScanner {
     @SuppressLint("StaticFieldLeak")
-    private lateinit var scanThread: OneCodeFast
+    private lateinit var scanThread: TwoScanning
 
     @SuppressLint("SuspiciousIndentation")
     fun startScan(
@@ -19,7 +17,7 @@ object OneScannerFast {
         globalVariables: GlobalVariables,
         binding: FragmentFactoryBinding
     ) {
-        scanThread = OneCodeFast(context, activity, globalVariables, binding)
+        scanThread = TwoScanning(context, activity, globalVariables, binding)
         globalVariables.setScanning(true)
         scanThread.start()
 

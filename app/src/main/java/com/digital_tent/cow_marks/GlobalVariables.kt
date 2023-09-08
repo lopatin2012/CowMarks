@@ -2,6 +2,7 @@ package com.digital_tent.cow_marks
 
 import android.app.Application
 import android.content.SharedPreferences
+import com.digital_tent.cow_marks.camera.TwoScanning
 import com.digital_tent.cow_marks.databinding.FragmentFactoryBinding
 import com.digital_tent.cow_marks.list_job.Job
 import com.google.gson.Gson
@@ -48,7 +49,28 @@ class GlobalVariables: Application() {
     }
     // Сохранить порт камеры
     fun setCameraPort(cameraPort: Int) {
-        editor.putInt("camera_port", cameraPort)
+        editor.putInt("camera_port2", cameraPort)
+        editor.apply()
+    }
+    //-----------------------------
+    // Если нужно подключить 2 разных cbx
+    // Получить ip-адрес камеры №2
+    fun getCameraIp2(): String {
+        return sharedPreferences.getString("camera_ip2", "") ?: ""
+    }
+    // Сохранить ip-адрес камеры №2
+    fun setCameraIp2(cameraIp: String) {
+        editor.putString("camera_ip2", cameraIp)
+        editor.apply()
+    }
+    //------------
+    // Получить порт камеры №2
+    fun getCameraPort2(): Int {
+        return sharedPreferences.getInt("camera_port2", 9999)
+    }
+    // Сохранить порт камеры №2
+    fun setCameraPor2(cameraPort: Int) {
+        editor.putInt("camera_port2", cameraPort)
         editor.apply()
     }
     //------------
@@ -77,6 +99,15 @@ class GlobalVariables: Application() {
     // Сохранить режим сканирования
     fun setScanningMode(scanningMode: String) {
         editor.putString("scanning_mode", scanningMode)
+        editor.apply()
+    }
+    // Получить флаг на сканирование с двух разных cbx
+    fun getTwoScanning(): Boolean {
+        return sharedPreferences.getBoolean("two_scanning", false)
+    }
+    // Сохранить флаг на сканирование с двух разных cbx
+    fun setTwoScanning(twoScanning: Boolean) {
+        editor.putBoolean("two_scanning", twoScanning)
         editor.apply()
     }
     // Параметры для принтера
