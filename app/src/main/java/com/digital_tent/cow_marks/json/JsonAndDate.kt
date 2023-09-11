@@ -325,7 +325,7 @@ class JsonAndDate(val context: Context) {
     }
     // Регулярка для поиска кодов
     fun extractCameraData(input: String): List<String> {
-        val regex = Regex("#STR#\\d{19}[^}]{12}#STX#")
+        val regex = Regex("\\d{19}[^}]{12}")
         val matches = regex.findAll(input)
 
         val result = mutableListOf<String>()

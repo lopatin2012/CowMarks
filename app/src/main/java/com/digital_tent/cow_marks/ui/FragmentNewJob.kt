@@ -268,7 +268,7 @@ class FragmentNewJob(
                 withContext(Dispatchers.IO) {
                     // Удаление устаревших кодов
                     val lifeCode = globalVariables.getLifeCode()
-                    val timeExpired = System.currentTimeMillis() / 1000 - (lifeCode * 24L * 60L * 60L)
+                    val timeExpired = System.currentTimeMillis() - (lifeCode * 24L * 60L * 60L * 1000)
                     codeDB.deleteExpiredRows(timeExpired)
                     // Удаление устаревших файлов
                     jsonAndDate.fileCheckerAndDelete()
@@ -276,7 +276,7 @@ class FragmentNewJob(
 //                println(lifeCode)
 //                println(timeExpired)
 //                println(System.currentTimeMillis() / 1000)
-//                println(System.currentTimeMillis() / 1000 - (lifeCode * 24L * 60L * 60L))
+//                println(System.currentTimeMillis() - (lifeCode * 24L * 60L * 60L))
 //                println(codeDelete)
 //                requireActivity().runOnUiThread{
 //                    Toast.makeText(requireContext(), "Задание создано", Toast.LENGTH_SHORT).show()

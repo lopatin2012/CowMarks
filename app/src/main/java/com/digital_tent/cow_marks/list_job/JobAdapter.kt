@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
 import com.digital_tent.cow_marks.GlobalVariables
@@ -138,6 +139,8 @@ class JobAdapter(
                     }
                 }
             }
+            listJobButtonDelete.isVisible = false
+            listJobButtonDelete.isEnabled = false
             listJobButtonDelete.setOnClickListener {
 
                 val position: Int = adapterPosition

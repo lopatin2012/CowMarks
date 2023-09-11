@@ -48,14 +48,16 @@
     <string name="list_job_button_open">Открыть задание</string>
     <string name="list_job_button_close">Выгрузить отчёт</string>
 
-    <!--Дополнительные возможности-->
 
-    <!--Системные настройки-->
+
+    <!--Дополнительные возможности-->
+    <string name="utility_title_name">Дополнительные возможности</string>
     <string name="utility_update_global_job_text">Глобальный счётчик заданий</string>
     <string name="utility_update_global_job_edit">Введите цифру</string>
-    <string name="utility_test_text">Тест камеры</string>
-    <string name="utility_test_button">Проверить камеру</string>
-    <string name="utility_button_save">Сохранить настройки</string>
+    <string name="utility_button_save">Сохранить</string>
+    <string name="utility_test_text">Список настроек камеры</string>
+    <string name="utility_test_button">Обновить</string>
+
 
 
 

@@ -11,6 +11,19 @@
         android:layout_height="match_parent">
 
         <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:text="@string/utility_title_name"
+            android:textColor="@color/black"
+            android:textSize="24sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
             android:id="@+id/utility_update_global_job_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -27,47 +40,56 @@
             android:id="@+id/utility_update_global_job_edit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="48dp"
+            android:layout_marginStart="52dp"
             android:layout_marginTop="32dp"
-            android:gravity="center"
+            android:autofillHints=""
             android:digits="0123456789"
             android:ems="10"
+            android:gravity="center"
             android:inputType="number"
             android:textSize="14sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/utility_update_global_job_text"
-            android:autofillHints=""
             tools:ignore="LabelFor" />
 
         <Button
-            android:id="@+id/utility_button_save"
+            android:id="@+id/utility_update_global_button_save"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="32dp"
+            android:layout_marginStart="64dp"
+            android:layout_marginTop="32dp"
             android:text="@string/utility_button_save"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/utility_update_global_job_edit" />
 
         <TextView
-            android:id="@+id/utility_test_text"
+            android:id="@+id/utility_camera_jobs_list_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="64dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginEnd="32dp"
             android:text="@string/utility_test_text"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <Button
-            android:id="@+id/utility_test_button"
+            android:id="@+id/utility_camera_jobs_list_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="48dp"
-            android:layout_marginEnd="32dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="56dp"
             android:text="@string/utility_test_button"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/utility_camera_jobs_list" />
+
+        <Spinner
+            android:id="@+id/utility_camera_jobs_list"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="56dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/utility_camera_jobs_list_text" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>
