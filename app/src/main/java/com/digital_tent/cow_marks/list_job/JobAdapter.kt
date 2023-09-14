@@ -66,6 +66,7 @@ class JobAdapter(
                 listJobButtonDelete.setBackgroundColor(Color.MAGENTA)
 //                listJobButtonClose.isEnabled = false
             }
+            // Открытие партии на линии
             listJobButtonOpen.setOnClickListener {
                 Log.e(TAG, "Задание открыто")
                 val position: Int = adapterPosition
@@ -109,6 +110,7 @@ class JobAdapter(
                 }
                 (context as MainActivity).fragmentFactory()
             }
+            // Выгрузка партии
             listJobButtonClose.setOnClickListener {
                 val position: Int = adapterPosition
                 if (position != RecyclerView.NO_POSITION) {
@@ -139,6 +141,7 @@ class JobAdapter(
                     }
                 }
             }
+            // Временное отключение кнопки удаления
             listJobButtonDelete.isVisible = false
             listJobButtonDelete.isEnabled = false
             listJobButtonDelete.setOnClickListener {

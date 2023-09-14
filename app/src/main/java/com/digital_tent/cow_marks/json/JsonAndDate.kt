@@ -168,7 +168,6 @@ class JsonAndDate(val context: Context) {
         return filename
     }
 
-
     private fun formatToday(toDay: Long): String? {
         val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         return simpleDateFormat.format(toDay)
@@ -244,7 +243,7 @@ class JsonAndDate(val context: Context) {
 
     // Выгрузка отчёта на сервер
     fun uploadFileToServer(editFile: String) {
-        val fileJson: File = File(context.filesDir, editFile)
+        val fileJson = File(context.filesDir, editFile)
 
         // Создайте экземпляр MediaType для указания типа содержимого
         val mediaType: MediaType? = MediaType.parse("application/json; charset=utf-8")
@@ -298,7 +297,7 @@ class JsonAndDate(val context: Context) {
         }
     }
 
-    // Чистка файлов. Если более 60 дней, то удалить
+    // Чистка файлов. Если более 7 дней, то удалить
     fun fileCheckerAndDelete() {
         val folderPath = context.applicationContext.filesDir.toString()
         val folder = File(folderPath)
@@ -310,7 +309,7 @@ class JsonAndDate(val context: Context) {
                     val currentDate = Date()
                     val diffInMillis = currentDate.time - lastModified
                     val diffInDays = diffInMillis / (24 * 60 * 60 * 1000)
-                    if (diffInDays >= 60) {
+                    if (diffInDays >= 7) {
                         file.delete()
 //                        val isDeleted = file.delete()
 //                        if (isDeleted) {

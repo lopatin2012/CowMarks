@@ -71,6 +71,7 @@ class FragmentNewJob(
     private lateinit var jobWorkshop: String
     private lateinit var jobLine: String
     private lateinit var jobDateFull: String
+    private lateinit var jobDateStr: String
     private lateinit var jobDate: String
     private lateinit var jobExpDate: String
     private lateinit var jobTNvedCode: String
@@ -182,6 +183,8 @@ class FragmentNewJob(
                         jobDateLife
                     )
                 }"
+                // Настройка даты
+                jobDateStr = jsonAndDate.formatDate(jobDate)
                 // Конечная дата
                 jobExpDate =
                     jsonAndDate.addExpirationDays(date.text.toString(), jobDateLife).toString()
@@ -199,13 +202,18 @@ class FragmentNewJob(
                 jobColor = Color.GREEN
                 // Настройка плана и отлов пустоты
                 jobPlan = if (plan.text.toString() == "") {
-                    "10000"
+                    "Не указано"
                 } else {
                     plan.text.toString()
                 }
-                jobPathFile = "${jobWorkshop}_${jobLine}_${jobGtin}_0_${jobParty}_${
-                    jobParty
-                }_${jobWork}_${jobPlan}_${jobStatus}.json"
+                jobListCodes = withContext(Dispatchers.IO) {
+                    codeDB.getCodes(jobGtin, jobWork.toString(), jobParty)
+                }
+                // Счётчик кодов
+                jobCounter = jobListCodes.size.toString()
+                // Путь к файлу
+                jobPathFile = "${jobWorkshop}_${jobLine}_${jobGtin}_0_${jobDate}_" +
+                        "${jobParty}_${jobWork}_${jobPlan}_${jobStatus}.json"
                 // Коды на принтер
                 jobCodesForPrinter = if (globalVariables.getPrinterLine()) {
                     if (printerEdit.text.toString() == "") {
@@ -216,11 +224,7 @@ class FragmentNewJob(
                 } else {
                     "0"
                 }
-                jobListCodes = withContext(Dispatchers.IO) {
-                    codeDB.getCodes(jobGtin, jobWork.toString(), jobParty)
-                }
-                // Счётчик кодов
-                jobCounter = jobListCodes.size.toString()
+
 
                 job = Job(
                     jobProductName,

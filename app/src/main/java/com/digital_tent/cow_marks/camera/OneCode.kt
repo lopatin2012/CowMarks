@@ -14,6 +14,7 @@ import com.digital_tent.cow_marks.db.Code
 import com.digital_tent.cow_marks.db.CodeDB
 import com.digital_tent.cow_marks.db.ProductDB
 import com.digital_tent.cow_marks.json.JsonAndDate
+import java.io.File
 import java.io.IOException
 import java.lang.System.currentTimeMillis
 import java.net.Socket
@@ -49,6 +50,16 @@ class OneCode(
     private var byteReader = 0 // Двоичное представление прочитанного кода
     private var buffer = ByteArray(2048) // Размер буфера (примерно 55 кодов за раз)
 
+    // Переменные для отправки периодических отчётов без кодов
+    // Путь к файлу
+    private lateinit var pathFile: String
+    private lateinit var workshop: String
+    private lateinit var line: String
+    private lateinit var plan: String
+    private val status = "В работе"
+    // Счётчик для отправки отчёта на сервер
+    private var sendCounter = 0
+
     override fun run() {
         // База данных
         val codeDB = CodeDB.getDB(context).codeDao()
@@ -63,6 +74,12 @@ class OneCode(
         val gtin: String = globalVariables.getGtinWork()
         // Задание
         val job: String = globalVariables.getJobWork()
+        // Цех.
+        workshop = globalVariables.getWorkshop()
+        // Линия.
+        line = globalVariables.getLine()
+        // План производства.
+        plan = globalVariables.getPlanWork()
 
         // Регулярное выражение
         val jsonAndDate = JsonAndDate(context)
@@ -291,6 +308,34 @@ class OneCode(
                         //                            Log.e(ContentValues.TAG, "code: $code")
                                     globalVariables.setCounter(factoryCounter.toString())
                                 }
+                            }
+                            // Если счётчик больше 100, то скинуть файл на сервер
+                            if (sendCounter >= 100) {
+                                pathFile = "${workshop}_${line}_${gtin}_${factoryCounter}_${date}_" +
+                                        "${party}_${job}_${plan}_${status}.json"
+                                File(pathFile)
+                                val listCodes = codeDB.getCodes(gtin, job, party).distinct()
+                                val jsonFile = jsonAndDate.createJsonFile(
+                                    context = context,
+                                    expDate = globalVariables.getExpDateWork(),
+                                    production_date = globalVariables.getDateWork(),
+                                    tnved_code = globalVariables.getTNvedCode(),
+                                    party = party,
+                                    gtin = gtin,
+                                    listCodes = listCodes,
+                                    job = job,
+                                    nameTerminal = line,
+                                    workshopFile = workshop,
+                                    plan = plan,
+                                    status = status
+                                )
+                                jsonAndDate.uploadFileToServer(jsonFile)
+//                                Log.e(TAG, "Отчёт: Файл создан", )
+                                // Обнуление счётчика на отправку файла
+                                sendCounter = 0
+
+                            } else {
+                                sendCounter += 1
                             }
                         }
                     }
