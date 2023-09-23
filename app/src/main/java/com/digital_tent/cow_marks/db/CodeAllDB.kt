@@ -21,7 +21,7 @@ abstract class CodeAllDB : RoomDatabase() {
             return Room.databaseBuilder(
                 context.applicationContext,
                 CodeAllDB::class.java,
-                "code_all.db"
+                "codes_all.db"
             ).build()
         }
     }

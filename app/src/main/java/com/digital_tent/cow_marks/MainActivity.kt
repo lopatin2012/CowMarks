@@ -21,6 +21,8 @@ import com.digital_tent.cow_marks.ui.FragmentSettings
 import com.digital_tent.cow_marks.ui.FragmentUtility
 import com.digital_tent.print_and_scan.ServerForTSD
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import java.util.Timer
+import java.util.TimerTask
 
 class MainActivity : AppCompatActivity() {
     private lateinit var globalVariables: GlobalVariables
@@ -57,7 +59,6 @@ class MainActivity : AppCompatActivity() {
         binding.bottomMenu.setOnItemSelectedListener {
             when (it.itemId) {
                 R.id.bottom_factory -> {
-                    Log.d(TAG, "factory: нажата кнопка")
                     supportFragmentManager
                         .beginTransaction()
                         .replace(
@@ -79,7 +80,6 @@ class MainActivity : AppCompatActivity() {
                             FragmentNewJob.newInstance(codeDB, productDB, supportFragmentManager)
                         )
                         .commit()
-                    Log.d(TAG, "new_job: нажата кнопка")
                 }
 
                 R.id.bottom_list_job -> {
@@ -95,7 +95,6 @@ class MainActivity : AppCompatActivity() {
                             )
                         )
                         .commit()
-                    Log.d(TAG, "list_job: нажата кнопка")
                 }
 
                 R.id.bottom_utility -> {
@@ -103,7 +102,6 @@ class MainActivity : AppCompatActivity() {
                         .beginTransaction()
                         .replace(R.id.fragment_main_menu, FragmentUtility.newInstance())
                         .commit()
-                    Log.d(TAG, "utility: нажата кнопка")
                 }
 
                 R.id.bottom_settings -> {
@@ -111,15 +109,24 @@ class MainActivity : AppCompatActivity() {
                         .beginTransaction()
                         .replace(R.id.fragment_main_menu, FragmentSettings.newInstance(workshopDB))
                         .commit()
-                    Log.d(TAG, "settings: нажата кнопка")
                 }
             }
             true
         }
-        ServerForTSD(this@MainActivity, globalVariables).start()
-//        WorkshopsJson(this@MainActivity).connect()
+        // Периодическая проверка работы сервера ТСД
+        val serverForTSD = ServerForTSD(this@MainActivity, globalVariables)
+        val timerServerForTSD = Timer()
+        timerServerForTSD.scheduleAtFixedRate(object : TimerTask(){
+            override fun run() {
+                if (!serverForTSD.isAlive) {
+                    serverForTSD.start()
+                }
+            }
+            // Первый запуск через секунду. Периодическая проверка раз в 5 минут
+        }, 1000, 300000)
         setContentView(binding.root)
     }
+
 
     fun fragmentFactory() {
         val codeDB = CodeDB.getDB(this@MainActivity).codeDao()

@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageButton
+import android.widget.TextView
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -18,13 +19,18 @@ import com.digital_tent.cow_marks.camera.OneScanner
 import com.digital_tent.cow_marks.camera.TwoScanner
 import com.digital_tent.cow_marks.camera.TwoScanning
 import com.digital_tent.cow_marks.databinding.FragmentFactoryBinding
+import com.digital_tent.cow_marks.db.Code
+import com.digital_tent.cow_marks.db.CodeAll
+import com.digital_tent.cow_marks.db.CodeAllDB
 import com.digital_tent.cow_marks.db.CodeDao
 import com.digital_tent.cow_marks.json.JsonAndDate
 import com.digital_tent.cow_marks.list_job.Job
 import com.digital_tent.cow_marks.list_job.JobAdapter
 import com.digital_tent.cow_marks.printer.CodePrinting
+import com.digital_tent.cow_marks.printer.DialogPrinter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -73,6 +79,9 @@ class FragmentFactory(
     // Взаимодействие с принтером
     private lateinit var listTemplates: List<String>
 
+    // Счётчик
+    private lateinit var counter: TextView
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -84,6 +93,8 @@ class FragmentFactory(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        counter = binding.factoryCounter
 
         globalVariables = requireContext().applicationContext as GlobalVariables
         // Функционал принтера
@@ -125,14 +136,15 @@ class FragmentFactory(
                 partyWork = globalVariables.getPartyWork()
                 gtinWork = globalVariables.getGtinWork()
                 jobWork = globalVariables.getJobWork()
-                globalVariables.setCounter(withContext(Dispatchers.IO) {
-                    codeDB.getCodes(gtinWork, jobWork, partyWork).distinct().size.toString()
-                })
-                binding.factoryCounter.text = globalVariables.getCounter()
-                activity?.runOnUiThread {
-                    buttonEnd.text = "Завершить партию"
-                    buttonReset.isEnabled = true
-                    buttonEnd.isEnabled = true
+                CoroutineScope(Dispatchers.IO).launch {
+                    globalVariables.setCounter(
+                        codeDB.getCodes(gtinWork, jobWork, partyWork).distinct().size.toString())
+                    counter.text = globalVariables.getCounter()
+                    activity?.runOnUiThread {
+                        buttonEnd.text = "Завершить партию"
+                        buttonReset.isEnabled = true
+                        buttonEnd.isEnabled = true
+                    }
                 }
             }
         }
@@ -140,10 +152,20 @@ class FragmentFactory(
         // Кнопка запуска печати на принтере
         buttonPrinter.setOnClickListener {
             CoroutineScope(Dispatchers.IO).launch {
+                dateWork = globalVariables.getDateWork()
+                dateExpWork = globalVariables.getExpDateWork()
+                partyWork = globalVariables.getPartyWork()
                 codePrinting = CodePrinting(globalVariables, binding)
-                listTemplates = codePrinting.getPrinterTemplates()
-                codePrinting.setJobSelect(listTemplates[0])
-                Log.e("На принтере шаблоны: ", listTemplates.toString())
+                codePrinting.clear()
+                delay(200)
+                codePrinting.getTemplatesList()
+                delay(200)
+                val listTemplates = codePrinting.listTemplates().toTypedArray()
+                Log.e("Printer", listTemplates.toString() )
+                val dialogPrinting = DialogPrinter.newInstance(listTemplates)
+                dialogPrinting.show(supportFragmentManager, "Шаблоны")
+                codePrinting.printingCodes(globalVariables.getTemplate(), dateWork, dateExpWork,
+                    "0104601751003768215!!)&a\u001D93zknO", partyWork)
             }
         }
 

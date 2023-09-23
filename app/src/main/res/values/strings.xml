@@ -55,8 +55,12 @@
     <string name="utility_update_global_job_text">Глобальный счётчик заданий</string>
     <string name="utility_update_global_job_edit">Введите цифру</string>
     <string name="utility_button_save">Сохранить</string>
-    <string name="utility_test_text">Список настроек камеры</string>
+    <string name="utility_test_text">Конфигурация камеры</string>
     <string name="utility_test_button">Обновить</string>
+    <string name="utility_two_terminal_text">2 терминала</string>
+    <string name="utility_two_terminal_button">Установить</string>
+    <string name="utility_checking_gtin_text">Проверка Gtin</string>
+    <string name="utility_checking_gtin_button">Установить</string>
 
 
 
@@ -75,7 +79,7 @@
     <string name="settings_camera_port_text">Порт главной камеры</string>
     <string name="settings_camera_ip_address_text2">ip-адрес второй камеры</string>
     <string name="settings_camera_port_text2">Порт второй камеры</string>
-    <string name="settings_camera_mode_text">Режим сканирования: %1s</string>
+    <string name="settings_camera_mode_text">Режим сканирования:\n%1s</string>
     <string name="settings_two_scanning_text">Доп CBX</string>
     <string name="settings_printer_text">Настройки принтера</string>
     <string name="settings_printer_ip_address_text">ip-адресс принтера</string>

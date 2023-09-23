@@ -1,79 +1,121 @@
 package com.digital_tent.cow_marks.printer
 
-import android.app.Activity
-import android.content.Context
+import android.content.ContentValues
 import android.util.Log
 import com.digital_tent.cow_marks.GlobalVariables
 import com.digital_tent.cow_marks.databinding.FragmentFactoryBinding
-import java.io.IOException
 import java.net.Socket
 
 class CodePrinting(val globalVariables: GlobalVariables, binding: FragmentFactoryBinding) {
+    // ACK - положительный ответ принтера
 
-    // Получение биндинга Фрагмента Производства
-    val binding = binding
-    fun getPrinterTemplates(): List<String> {
-        val printerIp = globalVariables.getPrinterIp()
-        val printerPort = globalVariables.getPrinterPort()
-        var reportPrinter = ""
-        val templatesList: MutableList<String> = mutableListOf()
-        val buffer = ByteArray(4096) // Размер буфера (примерно 100 кодов за раз)
+    private lateinit var stringTemplates: String
+
+    // Очистка очереди печати
+    fun clear() {
+        val printerIP = globalVariables.getPrinterIp()
+        val printerPORT = globalVariables.getPrinterPort()
+        val buffer = ByteArray(1024) // Размер буфера
         try {
-            Socket(printerIp, printerPort).use { socket ->
-                // Отправка и получение команд
-                val output = socket.getOutputStream()
-                val input = socket.getInputStream()
-                // Чистка синтаксиса передачи команд на принтер
-                output.write("\r".toByteArray())
-                output.flush()
-                // Очистка буфера серилизации
-                output.write("SCB\r".toByteArray())
-                output.flush()
-                // Получение ответа от принтера
-                reportPrinter = input.read(buffer).toString()
-                Log.e("Printer","Ответ принтера: $reportPrinter")
-                // Команда получения списка шаблонов для печати
-                output.write("GJL".toByteArray())
-                output.flush()
-                // Получение ответа принтера
-                var reportList = input.read(buffer).toString().split('|')
-                val reportListSize = reportList.size
-                reportList = reportList.slice(2 until reportListSize)
-                for (template in reportList) {
-                    templatesList.add(template)
+                Socket(printerIP, printerPORT).use {
+                    val output = it.getOutputStream()
+                    val input = it.getInputStream()
+                    // Чистка синтаксиса передачи команд на принтер
+                    output.write("\r".toByteArray())
+                    output.flush()
+                    // Очистка буфера серилизации
+                    output.write("SCB\r".toByteArray())
+                    output.flush()
+                    Log.e("SCB: ", String(buffer, 0, input.read(buffer)))
+                    // Чистка синтаксиса передачи команд на принтер
+                    output.write("\r".toByteArray())
+                    output.flush()
+
                 }
-                output.write("\r".toByteArray())
-                output.flush()
-            }
-        } catch (e: IOException) {
-            Log.e("Исключительный ответ принтера: ", e.toString(), )
+        } catch (e: Exception) {
+            Log.e(ContentValues.TAG, "Ошибка при отправке команды: ${e.message}")
         }
-        return templatesList
     }
 
-    // Выбор шаблона
-    fun setJobSelect(template: String) {
-        val printerIp = globalVariables.getPrinterIp()
-        val printerPort = globalVariables.getPrinterPort()
-        var reportPrinter = ""
-        val buffer = ByteArray(4096) // Размер буфера (примерно 100 кодов за раз)
+    // Получить список шаблонов
+    fun getTemplatesList(): String {
+        val printerIP = globalVariables.getPrinterIp()
+        val printerPORT = globalVariables.getPrinterPort()
+        val buffer = ByteArray(1024) // Размер буфера
         try {
-            Socket(printerIp, printerPort).use { socket ->
-                // Отправка и получение команд
-                val output = socket.getOutputStream()
-                val input = socket.getInputStream()
+            Socket(printerIP, printerPORT).use {
+                val output = it.getOutputStream()
+                val input = it.getInputStream()
                 // Чистка синтаксиса передачи команд на принтер
                 output.write("\r".toByteArray())
                 output.flush()
-                // Команда для смена шаблона
+                // Команда получения списка шаблонов для печати
+                output.write("GJL\r".toByteArray())
+                output.flush()
+                stringTemplates = String(buffer, 0, input.read(buffer))
+                Log.e("GJL: ", stringTemplates)
+                // Чистка синтаксиса передачи команд на принтер
+                output.write("\r".toByteArray())
+                output.flush()
+            }
+        } catch (e: Exception) {
+            Log.e(ContentValues.TAG, "Ошибка при отправке команды: ${e.message}")
+        }
+        return stringTemplates
+    }
+
+    // Получить список шаблонов
+    // Первые 2 элемента игнорируются, как и 2 последних
+    // Пример приходящих данных: JBL|4|TimeOFF Top DM C-off|TimeOFF Top DM|Top DM C-off|Top DM|
+    fun listTemplates(): List<String> {
+        val mutableListTemplates = stringTemplates.split("|").toMutableList()
+        return mutableListTemplates.slice(2 until mutableListTemplates.size - 1)
+    }
+
+    // Печать кодов
+    fun printingCodes(template: String, productDate: String, expirationDate: String,
+                      code: String, party: String) {
+        val printerIP = globalVariables.getPrinterIp()
+        val printerPORT = globalVariables.getPrinterPort()
+        val buffer = ByteArray(1024) // Размер буфера
+        try {
+            Socket(printerIP, printerPORT).use {
+                val output = it.getOutputStream()
+                val input = it.getInputStream()
+                // Чистка синтаксиса передачи команд на принтер
+                output.write("\r".toByteArray())
+                output.flush()
+                // Выбор шаблона для печати
                 output.write("SLA|$template|\r".toByteArray())
                 output.flush()
-                // Получение ответа от принтера
-                reportPrinter = input.read(buffer).toString()
-                Log.e("printer", "Ответ принтера: $reportPrinter")
+                Log.e("SLA: ", String(buffer, 0, input.read(buffer)))
+                // Получение сведений о свободном месте
+                output.write("SFS\r".toByteArray())
+                output.flush()
+                Log.e("SFS: ", String(buffer, 0, input.read(buffer)))
+                // Получение сведений о максимальном количестве записей в режиме серилизации
+                output.write("SGM\r".toByteArray())
+                output.flush()
+                Log.e("SGM: ", String(buffer, 0, input.read(buffer)))
+                // Получение количества записей в режиме серилизации
+                output.write("SRC\r".toByteArray())
+                output.flush()
+                Log.e("SRC: ", String(buffer, 0, input.read(buffer)))
+                // Подготовка переменных для отправки на печать
+                val gtin = code.substring(2, 17)
+                val sn = code.substring(18, 25)
+                val kripto = code.substring(27)
+                // Отправка на печать
+                output.write(("SHD|PRODUCT_DATE=$productDate|EXPIRATION_DATE=$expirationDate|" +
+                        "GTIN=$gtin|SN=$sn|KRIPTO=$kripto|PARTY=$party|\r").toByteArray())
+                output.flush()
+                Log.e("SHD: ", String(buffer, 0, input.read(buffer)))
+                // Чистка синтаксиса передачи команд на принтер
+                output.write("\r".toByteArray())
+                output.flush()
             }
-        } catch (e: IOException) {
-            Log.e("Исключительный ответ принтера: ", e.toString(),)
+        } catch (e: Exception) {
+            Log.e(ContentValues.TAG, "Ошибка при отправке команды: ${e.message}")
         }
     }
 }

@@ -11,6 +11,8 @@ import android.widget.Toast
 import com.digital_tent.cow_marks.GlobalVariables
 import com.digital_tent.cow_marks.databinding.FragmentFactoryBinding
 import com.digital_tent.cow_marks.db.Code
+import com.digital_tent.cow_marks.db.CodeAll
+import com.digital_tent.cow_marks.db.CodeAllDB
 import com.digital_tent.cow_marks.db.CodeDB
 import com.digital_tent.cow_marks.db.ProductDB
 import com.digital_tent.cow_marks.json.JsonAndDate
@@ -106,14 +108,16 @@ class TwoScanning(
                                         val gtinProduct = code.substring(2, 16)
                                         val product = productDB.getProductByGtin(gtinProduct)
                                         activity.runOnUiThread {
-                                            val text = "Статус кода: не соответствует заданию.\n Продукт: $product"
+                                            val text =
+                                                "Статус кода: не соответствует заданию.\n Продукт: $product"
                                             textNotification.text = text
                                             frameColor.setBackgroundColor(Color.RED)
                                         }
                                         // Если код уже есть в базе, то голубой экран
                                     } else if (codeDB.hasCode(code)) {
                                         activity.runOnUiThread {
-                                            textNotification.text = "Статус кода: есть в базе или обнаружен дубль"
+                                            textNotification.text =
+                                                "Статус кода: есть в базе или обнаружен дубль"
                                             frameColor.setBackgroundColor(Color.CYAN)
                                         }
                                     } else {
@@ -136,14 +140,16 @@ class TwoScanning(
                                         factoryCounter = globalVariables.getCounter().toInt()
                                         if (evenScan) {
                                             activity.runOnUiThread {
-                                                textNotification.text = "Статус кода: добавлен в базу"
+                                                textNotification.text =
+                                                    "Статус кода: добавлен в базу"
                                                 textCounter.text = factoryCounter.toString()
                                                 frameColor.setBackgroundColor(Color.GREEN)
                                             }
                                             //                            Log.d(TAG, "run: Зелёный")
                                         } else {
                                             activity.runOnUiThread {
-                                                textNotification.text = "Статус кода: добавлен в базу"
+                                                textNotification.text =
+                                                    "Статус кода: добавлен в базу"
                                                 textCounter.text = factoryCounter.toString()
                                                 frameColor.setBackgroundColor(Color.YELLOW)
                                             }
@@ -155,6 +161,7 @@ class TwoScanning(
                                     //                            Log.e(ContentValues.TAG, "code: $code")
                                     globalVariables.setCounter(factoryCounter.toString())
                                 }
+
                                 "Добавление" -> {
                                     // Обязательное добавление кода в базу
                                     // с последующей обработкой
@@ -198,19 +205,24 @@ class TwoScanning(
                                     // Код не соответствует заданию
                                     if (!code.contains(gtin)) {
                                         factoryCounter -= 1
-                                        CodeDB.getDB(context).codeDao().deleteCodeServer(code, party, job)
+                                        CodeDB.getDB(context).codeDao()
+                                            .deleteCodeServer(code, party, job)
                                         val gtinProduct = code.substring(2, 16)
                                         val product = productDB.getProductByGtin(gtinProduct)
                                         activity.runOnUiThread {
-                                            val text = "Статус кода: не соответствует заданию.\n Продукт: $product"
+                                            val text =
+                                                "Статус кода: не соответствует заданию.\n Продукт: $product"
                                             textNotification.text = text
                                             textCounter.text = factoryCounter.toString()
                                             frameColor.setBackgroundColor(Color.RED)
                                         }
-                                    } else if (CodeDB.getDB(context).codeDao().duplicates(code, job)) {
+                                    } else if (CodeDB.getDB(context).codeDao()
+                                            .duplicates(code, job)
+                                    ) {
                                         //                           Log.d(TAG, "run: Код не соответствует заданию")
                                         //                                Дубль кода
-                                        CodeDB.getDB(context).codeDao().deleteCodeServer(code, party, job)
+                                        CodeDB.getDB(context).codeDao()
+                                            .deleteCodeServer(code, party, job)
                                         codeDB.addCode(
                                             Code(
                                                 id = null,
@@ -227,20 +239,23 @@ class TwoScanning(
                                         //                        Log.d(TAG, "run: Код уже добавлен")
                                         // Сообщить что код уже в базе
                                         activity.runOnUiThread {
-                                            textNotification.text = "Статус кода: есть в базе или обнаружен дубль"
+                                            textNotification.text =
+                                                "Статус кода: есть в базе или обнаружен дубль"
                                             textCounter.text = factoryCounter.toString()
                                             frameColor.setBackgroundColor(Color.CYAN)
                                         }
                                     }
                                     globalVariables.setCounter(factoryCounter.toString())
                                 }
+
                                 else -> {
                                     // Если код не соответствует заданию, то красный экран
                                     if (!code.contains(gtin)) {
                                         val gtinProduct = code.substring(2, 16)
                                         val product = productDB.getProductByGtin(gtinProduct)
                                         activity.runOnUiThread {
-                                            val text = "Статус кода: не соответствует заданию.\n Продукт: $product"
+                                            val text =
+                                                "Статус кода: не соответствует заданию.\n Продукт: $product"
                                             textNotification.text = text
                                             frameColor.setBackgroundColor(Color.RED)
                                         }
@@ -264,14 +279,16 @@ class TwoScanning(
                                         factoryCounter = globalVariables.getCounter().toInt()
                                         if (evenScan) {
                                             activity.runOnUiThread {
-                                                textNotification.text = "Статус кода: добавлен в базу"
+                                                textNotification.text =
+                                                    "Статус кода: добавлен в базу"
                                                 textCounter.text = factoryCounter.toString()
                                                 frameColor.setBackgroundColor(Color.GREEN)
                                             }
                                             //                            Log.d(TAG, "run: Зелёный")
                                         } else {
                                             activity.runOnUiThread {
-                                                textNotification.text = "Статус кода: добавлен в базу"
+                                                textNotification.text =
+                                                    "Статус кода: добавлен в базу"
                                                 textCounter.text = factoryCounter.toString()
                                                 frameColor.setBackgroundColor(Color.YELLOW)
                                             }
@@ -287,7 +304,9 @@ class TwoScanning(
                         }
                     }
                     // Актуализация счётчика
-                    globalVariables.setCounter(codeDB.getCodes(gtin, job, party).distinct().size.toString())
+                    globalVariables.setCounter(
+                        codeDB.getCodes(gtin, job, party).distinct().size.toString()
+                    )
                     factoryCounter = globalVariables.getCounter().toInt()
                     activity.runOnUiThread {
                         textCounter.text = factoryCounter.toString()

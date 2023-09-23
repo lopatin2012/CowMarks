@@ -2,6 +2,7 @@ package com.digital_tent.cow_marks.ui
 
 import android.app.Activity
 import android.content.ContentValues
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -10,8 +11,10 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
+import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.Spinner
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.digital_tent.cow_marks.GlobalVariables
@@ -20,6 +23,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.net.InetSocketAddress
 import java.net.Socket
 
 class FragmentUtility : Fragment() {
@@ -29,16 +33,23 @@ class FragmentUtility : Fragment() {
 
     // Настройка глобального счётчика Заданий.
     private lateinit var globalJobEdit: EditText
+    // Кнопка сохранения глобального счётчика заданий.
+    private lateinit var buttonJobSave: Button
 
-    // Кнопка сохранения настроек
-    private lateinit var buttonSave: Button
+    // Настройки работы двух терминалов.
+    private lateinit var buttonTwoTerminalSave: Button
+    private lateinit var checkBoxTwoTerminal: CheckBox
 
+    // Настройка сканирования с проверкой Gtin(строки).
+    private lateinit var buttonCheckingGtin: Button
+    private lateinit var checkBoxCheckingGtin: CheckBox
 
     // Фрагмент биндинг.
     private lateinit var binding: FragmentUtilityBinding
 
     // Камера
     private var buffer = ByteArray(1024) // Размер буфера
+    private lateinit var cameraText: TextView
     private lateinit var buttonCameraJobsList: Button
     private lateinit var cameraJobsList: MutableList<String>
     private lateinit var cameraJobsListSpinner: Spinner
@@ -56,14 +67,26 @@ class FragmentUtility : Fragment() {
         globalVariables = requireContext().applicationContext as GlobalVariables
         globalJobEdit = binding.utilityUpdateGlobalJobEdit
         // Кнопка сохранения глобального счётчика заданий
-        buttonSave = binding.utilityUpdateGlobalButtonSave
+        buttonJobSave = binding.utilityUpdateGlobalJobButtonSave
         globalJobEdit.setText(globalVariables.getProductJob().toString())
         // Кнопка получения списка конфигураций с камеры
         buttonCameraJobsList = binding.utilityCameraJobsListButton
+        // Текст камеры для изменения конфигуратора.
+        cameraText = binding.utilityCameraJobsListText
         // Список конфигураций камеры
         cameraJobsListSpinner = binding.utilityCameraJobsList
 
-        buttonSave.setOnClickListener {
+        // Сканирование с двух терминалов.
+        checkBoxTwoTerminal = binding.utilityTwoTerminalCheckBox
+        buttonTwoTerminalSave = binding.utilityTwoTerminalButton
+        checkBoxTwoTerminal.isChecked = globalVariables.getTwoScanning()
+
+        // Сканирование с проверкой Gtin(строки).
+        buttonCheckingGtin = binding.utilityCheckingGtinButton
+        checkBoxCheckingGtin = binding.utilityCheckingGtinCheckBox
+        checkBoxCheckingGtin.isChecked = globalVariables.getScanningGtin()
+
+        buttonJobSave.setOnClickListener {
             globalVariables.setProductJob(globalJobEdit.text.toString().toInt())
             Toast.makeText(requireContext(), "Настройки сохранены", Toast.LENGTH_SHORT).show()
         }
@@ -135,6 +158,15 @@ class FragmentUtility : Fragment() {
             }
         }
 
+        // Режим работы от одного или двух терминалов.
+        buttonTwoTerminalSave.setOnClickListener {
+            globalVariables.setTwoScanning(checkBoxTwoTerminal.isChecked)
+        }
+
+        // Режим проверки Gtin(строки).
+        buttonCheckingGtin.setOnClickListener {
+            globalVariables.setScanningGtin(checkBoxCheckingGtin.isChecked)
+        }
     }
 
     override fun onResume() {
@@ -142,10 +174,17 @@ class FragmentUtility : Fragment() {
         CoroutineScope(Dispatchers.IO).launch {
             // Подключение к камере
             val ipCamera = globalVariables.getCameraIp()
+            // Специальный порт для взаимодействия с камерой через socket.
             val portCamera = 1023
+            // Создание сокета для подключения к камере.
+            val socket = Socket()
             try {
                 withContext(Dispatchers.IO) {
-                    Socket(ipCamera, portCamera).use {
+                    socket.connect(InetSocketAddress(ipCamera, portCamera), 1000)
+                    socket.use {
+                        withContext(Dispatchers.Main) {
+                            cameraText.setTextColor(Color.GREEN)
+                        }
                         val output = it.getOutputStream()
                         val input = it.getInputStream()
                         // Режим хоста
@@ -186,6 +225,10 @@ class FragmentUtility : Fragment() {
                 }
             } catch (e: Exception) {
                 Log.e(ContentValues.TAG, "Ошибка при отправке команды: ${e.message}")
+                withContext(Dispatchers.Main) {
+                    cameraText.text = "Не удалось подключиться к камере"
+                    cameraText.setBackgroundColor(Color.RED)
+                }
             }
         }
     }

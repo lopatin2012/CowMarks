@@ -80,7 +80,7 @@ class GlobalVariables: Application() {
     }
     // Сохранить флаг сканирования по gtin
     fun setScanningGtin(scanningGtin: Boolean) {
-        editor.putBoolean("scanning_gtin", false)
+        editor.putBoolean("scanning_gtin", scanningGtin)
         editor.apply()
     }
     // Получать флаг сканирования
@@ -138,6 +138,15 @@ class GlobalVariables: Application() {
     // Сохранить наличие принтера на линии
     fun setPrinterLine(printerLine: Boolean) {
         editor.putBoolean("printer_line", printerLine)
+        editor.apply()
+    }
+    // Получить шаблон для печати на принтере
+    fun getTemplate(): String {
+        return sharedPreferences.getString("printer_template", "")?: ""
+    }
+    // Сохранить шаблон для печати на принтере
+    fun setTemplate(template: String) {
+        editor.putString("printer_template", template)
         editor.apply()
     }
     // Параметры для терминала

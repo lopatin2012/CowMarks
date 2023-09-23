@@ -32,6 +32,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 
 
 class FragmentNewJob(
@@ -194,7 +197,14 @@ class FragmentNewJob(
                 }
                 // Настройка партии
                 jobParty = if (party.text.toString() == "") {
-                    jsonAndDate.formatDate(jobDate)
+                    // Формат для даты и проверка на текущий день, если долив или дофасовка день в день
+                    val formatter = DateTimeFormatter.ofPattern("dd.MM.yy")
+                    if (LocalDate.now().format(formatter).toString() == jobDate) {
+                        "${jsonAndDate.formatDate(jobDate)}-1"
+                    }
+                    else {
+                        jsonAndDate.formatDate(jobDate)
+                    }
                 } else {
                     "${jsonAndDate.formatDate(jobDate)}-${party.text}"
                 }
