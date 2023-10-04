@@ -23,6 +23,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.net.InetSocketAddress
+import java.net.Socket
 
 
 class JobAdapter(
@@ -82,6 +84,56 @@ class JobAdapter(
                     globalVariables.setPartyWork(currentJob.party)
                     globalVariables.setPlanWork(currentJob.plan)
                     globalVariables.setStatusWork(currentJob.status)
+                    // Сканирование по gtin(строке)
+                    if (globalVariables.getScanningGtin()) {
+                        val gtin = currentJob.gtin
+                        val ipCamera = globalVariables.getCameraIp()
+                        val buffer = ByteArray(2048) // Размер буфера (примерно 55 кодов за раз)
+                        CoroutineScope(Dispatchers.IO).launch {
+                            if (globalVariables.getScanningGtin()) {
+                                // Создание сокета для подключения к камере.
+                                val socketCamera = Socket()
+                                try {
+                                    withContext(Dispatchers.IO) {
+                                        socketCamera.connect(InetSocketAddress(ipCamera, 1023), 1000)
+                                    }
+                                    socketCamera.use {
+                                        val output = it.getOutputStream()
+                                        val input = it.getInputStream()
+                                        // Режим хоста
+                                        output.write(byteArrayOf(27, 91, 67)) // <ESC>[C
+                                        output.flush()
+                                        Log.e(TAG, "run: ${String(buffer, 0, input.read(buffer))}")
+                                        // Программирование камеры
+                                        output.write(byteArrayOf(27, 91, 66)) // <ESC>[B
+                                        output.flush()
+                                        Log.e(TAG, "run: ${String(buffer, 0, input.read(buffer))}")
+                                        // Установить значение проверки кода
+                                        output.write("MATCH *$gtin*\n".toByteArray()) // MATCH<space>code_content<LF>
+                                        output.flush()
+                                        Log.e(TAG, "run: ${String(buffer, 0, input.read(buffer))}")
+                                        // Сохранить конфигурацию
+                                        output.write("SAVE Gtin\n".toByteArray()) // SAVE<space>configuration_name<LF>
+                                        output.flush()
+                                        Log.e(TAG, "run: ${String(buffer, 0, input.read(buffer))}")
+                                        // Установить конфигурацию
+                                        output.write("CHANGE_CFG Gtin\n".toByteArray()) // CHANGE_CFG<space>configuration_name<LF>
+                                        output.flush()
+                                        Log.e(TAG, "run: ${String(buffer, 0, input.read(buffer))}")
+                                        // Установить запуск по-умолчанию Gtin
+                                        output.write("STARTUP_CFG Gtin\n".toByteArray()) // STARTUP_CFG<space>configuration_name<LF>
+                                        output.flush()
+                                        Log.e(TAG, "run: ${String(buffer, 0, input.read(buffer))}")
+                                        output.write(byteArrayOf(27, 91, 65)) // <ESC>[A
+                                        output.flush()
+                                        Log.e(TAG, "run: ${String(buffer, 0, input.read(buffer))}")
+                                    }
+                                } catch (e: Exception) {
+                                    Log.e(TAG, "Ошибка при отправке команды: ${e.message}")
+                                }
+                            }
+                        }
+                    }
                     // Сохранить позицию задания в глобальной переменной
                     globalVariables.setPositionJobInList(position)
                     val statusOpen = "На линии"

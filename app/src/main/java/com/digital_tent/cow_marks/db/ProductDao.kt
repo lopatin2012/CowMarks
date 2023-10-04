@@ -34,6 +34,10 @@ interface ProductDao {
     @Query("SELECT name FROM products WHERE line = :line ")
     fun getProductsByLine(line: String): List<String>
 
+    // Получить список gtin-ов по от продуктов по линии
+    @Query("SELECT gtin FROM products WHERE line = :line")
+    fun getGtinByLine(line: String): List<String>
+
     // Удалить все строки в базе данных
     @Query("DELETE FROM products")
     fun deleteBase()

@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -27,6 +28,8 @@ import com.digital_tent.cow_marks.db.ProductDao
 import com.digital_tent.cow_marks.json.JsonAndDate
 import com.digital_tent.cow_marks.list_job.Job
 import com.digital_tent.cow_marks.list_job.JobAdapter
+import com.digital_tent.cow_marks.product_spinner.ProductSpinnerAdapter
+import com.digital_tent.cow_marks.product_spinner.ProductSpinnerItem
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -129,19 +132,28 @@ class FragmentNewJob(
         // Инициализация глобальных переменных
         globalVariables = requireContext().applicationContext as GlobalVariables
 
-//        setupKeyboardHideOnEnterPress(date, requireActivity())
-//        setupKeyboardHideOnEnterPress(party, requireActivity())
-//        setupKeyboardHideOnEnterPress(plan, requireActivity())
         date.setText(globalVariables.getDateWork())
         // Список продуктов
         CoroutineScope(Dispatchers.Main).launch {
             productItems = withContext(Dispatchers.IO) {
                 productDB.getProductsByLine(globalVariables.getLine()).distinct()
             }
-            val adapter =
-                ArrayAdapter(requireActivity(), android.R.layout.simple_list_item_1, productItems)
+            val gtinItems = withContext(Dispatchers.IO) {
+                productDB.getGtinByLine(globalVariables.getLine()).distinct()
+            }
+            val products = mutableListOf<ProductSpinnerItem>()
+            for (i in productItems.indices) {
+                products.add(ProductSpinnerItem(productItems[i], gtinItems[i]))
+            }
+            Log.e("product", productItems[0])
+            Log.e("product", gtinItems[0])
+            val adapter = ProductSpinnerAdapter(context = requireActivity(), products)
+//            val adapter =
+//                ArrayAdapter(requireActivity(), android.R.layout.simple_list_item_1, productItems)
             productList.adapter = adapter
             adapter.notifyDataSetChanged()
+//            val product = productList.selectedItem.toString().substringAfter("product=").substringBefore(", imageUrl")
+//            Log.e("productList.selectedItem.toString()", product)
         }
 
         buttonCreateJob.setOnClickListener {
@@ -153,7 +165,7 @@ class FragmentNewJob(
                 codeDB,
                 supportFragmentManager
             )
-            // Изменение цвета кнопки после создания задания
+            // Изменение цвета кнопки после создания задания.
             if (colorButton) {
                 buttonCreateJob.setBackgroundColor(Color.GREEN)
                 buttonCreateJob.text = "Задание создано!"
@@ -164,12 +176,15 @@ class FragmentNewJob(
             }
             colorButton = !colorButton
 
-            // Настройка переменных для нового задания
+            // Настройка переменных для нового задания.
             jobWork = globalVariables.getProductJob()
-            jobProductName = productList.selectedItem.toString()
+            // Дикий костыль.
+            jobProductName =  productList.selectedItem.toString()
+                .substringAfter("product=")
+                .substringBefore(", imageUrl")
             jobWorkshop = globalVariables.getWorkshop()
             jobLine = globalVariables.getLine()
-            // Поток для создания задания
+            // Поток для создания задания.
             CoroutineScope(Dispatchers.Main).launch {
                 jobGtin = withContext(Dispatchers.IO) {
                     productDB.getGtinByProduct(jobProductName)

@@ -329,7 +329,8 @@ class JsonAndDate(val context: Context) {
 
         val result = mutableListOf<String>()
         for (match in matches) {
-            val value = match.value.removePrefix("#STR#").removeSuffix("#STX#")
+//            val value = match.value.removePrefix("#STR#").removeSuffix("#STX#")
+            val value = match.value
             result.add(value)
         }
         return result

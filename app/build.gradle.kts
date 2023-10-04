@@ -13,7 +13,7 @@ android {
         minSdk = 27
         targetSdk = 34
         versionCode = 1
-        versionName = "0.1"
+        versionName = "0.0.5"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -42,8 +42,8 @@ android {
 dependencies {
 
     implementation("androidx.preference:preference-ktx:1.2.1")
-    implementation("androidx.navigation:navigation-fragment-ktx:2.7.2")
-    implementation("androidx.navigation:navigation-ui-ktx:2.7.2")
+    implementation("androidx.navigation:navigation-fragment-ktx:2.7.3")
+    implementation("androidx.navigation:navigation-ui-ktx:2.7.3")
 
 
     implementation("androidx.core:core-ktx:1.12.0")
@@ -65,6 +65,10 @@ dependencies {
     // Json
     implementation("com.google.code.gson:gson:2.9.1")
 
+    // Пикасо для загрузки изображений с сайта
+    implementation("com.squareup.picasso:picasso:2.8")
+
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+
 }

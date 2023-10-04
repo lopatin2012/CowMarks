@@ -34,7 +34,6 @@
     <string name="new_job_codes_to_the_printer_text">Кодов на печать</string>
     <string name="new_job_codes_to_the_printer_edit">Введите количество</string>
     <string name="new_job_button_create">Создать задание</string>
-    <string name="new_job_faq">!Важно!\n1. Если день в день,\n то ставим "1"\n в строке "Партия",\n иначе не ставим</string>
 
     <!--Одно задание-->
     <string name="list_job_product_text">Наименования продукта:\n%1s</string>

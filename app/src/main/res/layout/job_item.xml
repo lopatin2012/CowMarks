@@ -51,7 +51,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="80dp"
-        android:layout_marginEnd="30dp"
+        android:layout_marginEnd="8dp"
         android:gravity="center"
         android:text="@string/list_job_codes_for_printer"
         android:textColor="@color/black"
