@@ -68,6 +68,9 @@ class OneCode(
     private lateinit var plan: String
     private val status = "В работе"
 
+    // Массив с кодами.
+    private val arrayOfCodes: ArrayList<String> = arrayListOf()
+
     // Счётчик для отправки отчёта на сервер
     private var sendCounter = 0
 
@@ -101,256 +104,110 @@ class OneCode(
         activity.runOnUiThread {
             textCounter.text = factoryCounter.toString()
         }
+        // добавление кодов в массив из базы.
+        CoroutineScope(Dispatchers.IO).launch {
+            for (i in codeDB.getCodes(gtin, job, party)) {
+                arrayOfCodes.add(i)
+            }
+        }
 //        Log.e(TAG, "party: $party gtin: $gtin jobwork: $jobWork Количество кодов: $factoryCounter", )
 
-        // Получение режима работы сканера
-        val scanningOperationMode = globalVariables.getScanningMode()
 
         // Подключение к камере
         val ipCamera = globalVariables.getCameraIp()
         val portCamera = globalVariables.getCameraPort()
         try {
             Socket(ipCamera, portCamera).use { socket ->
-                // Изменение цвета продукта на зелёный
+                // Изменение цвета продукта на зелёный.
                 activity.runOnUiThread {
                     textProduct.setBackgroundColor(
                         Color.GREEN
                     )
                 }
-
-                while (globalVariables.getScanning()) {
-                    while (socket.getInputStream().read(buffer).also { byteReader = it } != -1) {
-                        // Остановка сканирования
-                        if (!globalVariables.getScanning()) {
-                            activity.runOnUiThread {
-                                textProduct.setBackgroundColor(Color.RED)
-                            }
-                            return
+                while (socket.getInputStream().read(buffer).also { byteReader = it } != -1) {
+                    // Остановка сканирования.
+                    if (!globalVariables.getScanning()) {
+                        activity.runOnUiThread {
+                            textProduct.setBackgroundColor(Color.RED)
                         }
-                        if (currentThread().isInterrupted) {
-                            Log.d(TAG, "run: Поток был прерван")
-                            return
-                        }
-                        val inputString = String(buffer, 0, byteReader)
-                        val codesDataMatrix = jsonAndDate.extractCameraData(inputString)
+                        return
+                    }
+                    if (currentThread().isInterrupted) {
+//                            Log.d(TAG, "run: Поток был прерван")
+                        return
+                    }
+                    val inputString = String(buffer, 0, byteReader)
+                    val codesDataMatrix = jsonAndDate.extractCameraData(inputString)
+                    CoroutineScope(Dispatchers.IO).launch {
                         for (code in codesDataMatrix) {
                             // Проверка режима работы для получения кодов с одной/связки камер на терминале.
-                            when (scanningOperationMode) {
-                                "Проверка" -> {
-                                    // Если код не соответствует заданию, то красный экран
-                                    if (!code.contains(gtin)) {
-                                        val gtinProduct = code.substring(2, 16)
-                                        val product = productDB.getProductByGtin(gtinProduct)
-                                        activity.runOnUiThread {
-                                            val text =
-                                                "Статус кода: не соответствует заданию.\n Продукт: $product"
-                                            textNotification.text = text
-                                            frameColor.setBackgroundColor(Color.RED)
-                                        }
-                                        // Если код уже есть в базе, то голубой экран
-                                    } else if (codeDB.hasCode(code)) {
-                                        activity.runOnUiThread {
-                                            textNotification.text =
-                                                "Статус кода: есть в базе или обнаружен дубль"
-                                            frameColor.setBackgroundColor(Color.CYAN)
-                                        }
-                                    } else {
-                                        codeDB.addCode(
-                                            Code(
-                                                id = null,
-                                                code = code,
-                                                date = date,
-                                                party = party,
-                                                job = job,
-                                                time = currentTimeMillis(),
-                                                printer = 0,
-                                                valid = 1
-                                            )
-                                        )
-                                        //                        Log.d(TAG, "run: Код добавлен")
-                                        factoryCounter = globalVariables.getCounter().toInt()
-                                        factoryCounter += 1
-                                        globalVariables.setCounter(factoryCounter.toString())
-                                        factoryCounter = globalVariables.getCounter().toInt()
-                                        if (evenScan) {
-                                            activity.runOnUiThread {
-                                                textNotification.text =
-                                                    "Статус кода: добавлен в базу"
-                                                textCounter.text = factoryCounter.toString()
-                                                frameColor.setBackgroundColor(Color.GREEN)
-                                            }
-                                            //                            Log.d(TAG, "run: Зелёный")
-                                        } else {
-                                            activity.runOnUiThread {
-                                                textNotification.text =
-                                                    "Статус кода: добавлен в базу"
-                                                textCounter.text = factoryCounter.toString()
-                                                frameColor.setBackgroundColor(Color.YELLOW)
-                                            }
-                                            //                            Log.d(TAG, "run: Жёлтый")
-                                        }
-                                        evenScan = !evenScan
-                                    }
-                                    //                            Log.e(ContentValues.TAG, "inputCode: $inputString")
-                                    //                            Log.e(ContentValues.TAG, "code: $code")
-                                    globalVariables.setCounter(factoryCounter.toString())
+                            // Если код не соответствует заданию, то красный экран
+                            if (!code.contains(gtin)) {
+                                val gtinProduct = code.substring(2, 16)
+                                val product = productDB.getProductByGtin(gtinProduct)
+                                activity.runOnUiThread {
+                                    val text =
+                                        "Статус кода: не соответствует заданию.\n Продукт: $product"
+                                    textNotification.text = text
+                                    frameColor.setBackgroundColor(Color.RED)
                                 }
-
-                                "Добавление" -> {
-                                    // Обязательное добавление кода в базу
-                                    // с последующей обработкой
-                                    // если код уже есть в базе
-                                    // то будет удалён один из них
-                                    codeDB.addCode(
-                                        Code(
-                                            id = null,
-                                            code = code,
-                                            date = date,
-                                            party = party,
-                                            job = job,
-                                            time = currentTimeMillis(),
-                                            printer = 0,
-                                            valid = 1
-                                        )
-                                    )
-                                    //                        Log.d(TAG, "run: Код добавлен")
-                                    factoryCounter = globalVariables.getCounter().toInt()
-                                    factoryCounter += 1
-                                    globalVariables.setCounter(factoryCounter.toString())
-                                    factoryCounter = globalVariables.getCounter().toInt()
-                                    if (evenScan) {
-                                        activity.runOnUiThread {
-                                            textNotification.text = "Статус кода: добавлен в базу"
-                                            textCounter.text = factoryCounter.toString()
-                                            frameColor.setBackgroundColor(Color.GREEN)
-                                        }
-                                        //                            Log.d(TAG, "run: Зелёный")
-                                    } else {
-                                        activity.runOnUiThread {
-                                            textNotification.text = "Статус кода: добавлен в базу"
-                                            textCounter.text = factoryCounter.toString()
-                                            frameColor.setBackgroundColor(Color.YELLOW)
-                                        }
-                                        //                            Log.d(TAG, "run: Жёлтый")
-                                    }
-                                    evenScan = !evenScan
-
-                                    // Log.d(TAG, "run: Код не соответствует заданию")
-                                    // Код не соответствует заданию
-                                    if (!code.contains(gtin)) {
-                                        factoryCounter -= 1
-                                        CodeDB.getDB(context).codeDao()
-                                            .deleteCodeServer(code, party, job)
-                                        val gtinProduct = code.substring(2, 16)
-                                        val product = productDB.getProductByGtin(gtinProduct)
-                                        activity.runOnUiThread {
-                                            val text =
-                                                "Статус кода: не соответствует заданию.\n Продукт: $product"
-                                            textNotification.text = text
-                                            textCounter.text = factoryCounter.toString()
-                                            frameColor.setBackgroundColor(Color.RED)
-                                        }
-                                    } else if (CodeDB.getDB(context).codeDao()
-                                            .duplicates(code, job)
-                                    ) {
-                                        //                           Log.d(TAG, "run: Код не соответствует заданию")
-                                        //                                Дубль кода
-                                        CodeDB.getDB(context).codeDao()
-                                            .deleteCodeServer(code, party, job)
-                                        codeDB.addCode(
-                                            Code(
-                                                id = null,
-                                                code = code,
-                                                date = date,
-                                                party = party,
-                                                job = job,
-                                                time = currentTimeMillis(),
-                                                printer = 0,
-                                                valid = 1
-                                            )
-                                        )
-                                        factoryCounter -= 1
-                                        //                        Log.d(TAG, "run: Код уже добавлен")
-                                        // Сообщить что код уже в базе
-                                        activity.runOnUiThread {
-                                            textNotification.text =
-                                                "Статус кода: есть в базе или обнаружен дубль"
-                                            textCounter.text = factoryCounter.toString()
-                                            frameColor.setBackgroundColor(Color.CYAN)
-                                        }
-                                    }
-                                    globalVariables.setCounter(factoryCounter.toString())
+                                // Если код уже есть в базе, то голубой экран
+                            } else if (arrayOfCodes.contains(code)) {
+                                activity.runOnUiThread {
+                                    textNotification.text =
+                                        "Статус кода: есть в базе или обнаружен дубль"
+                                    frameColor.setBackgroundColor(Color.CYAN)
                                 }
-
-                                else -> {
-                                    // Если код не соответствует заданию, то красный экран
-                                    if (!code.contains(gtin)) {
-                                        val gtinProduct = code.substring(2, 16)
-                                        val product = productDB.getProductByGtin(gtinProduct)
-                                        activity.runOnUiThread {
-                                            val text =
-                                                "Статус кода: не соответствует заданию.\n Продукт: $product"
-                                            textNotification.text = text
-                                            frameColor.setBackgroundColor(Color.RED)
-                                        }
-                                    } else {
-                                        codeDB.addCode(
-                                            Code(
-                                                id = null,
-                                                code = code,
-                                                date = date,
-                                                party = party,
-                                                job = job,
-                                                time = currentTimeMillis(),
-                                                printer = 0,
-                                                valid = 1
-                                            )
-                                        )
-                                        //                        Log.d(TAG, "run: Код добавлен")
-                                        factoryCounter = globalVariables.getCounter().toInt()
-                                        factoryCounter += 1
-                                        globalVariables.setCounter(factoryCounter.toString())
-                                        factoryCounter = globalVariables.getCounter().toInt()
-                                        if (evenScan) {
-                                            activity.runOnUiThread {
-                                                textNotification.text =
-                                                    "Статус кода: добавлен в базу"
-                                                textCounter.text = factoryCounter.toString()
-                                                frameColor.setBackgroundColor(Color.GREEN)
-                                            }
-                                            //                            Log.d(TAG, "run: Зелёный")
-                                        } else {
-                                            activity.runOnUiThread {
-                                                textNotification.text =
-                                                    "Статус кода: добавлен в базу"
-                                                textCounter.text = factoryCounter.toString()
-                                                frameColor.setBackgroundColor(Color.YELLOW)
-                                            }
-                                            //                            Log.d(TAG, "run: Жёлтый")
-                                        }
-                                        evenScan = !evenScan
-                                    }
-                                    //                            Log.e(ContentValues.TAG, "inputCode: $inputString")
-                                    //                            Log.e(ContentValues.TAG, "code: $code")
-                                    globalVariables.setCounter(factoryCounter.toString())
-                                }
-                            }
-                            // Если счётчик больше 100, то скинуть файл на сервер
-                            if (sendCounter >= 100) {
-                                report(gtin, date, party, job, codeDB, jsonAndDate)
-                                sendCounter = 0
                             } else {
-                                sendCounter += 1
+                                codeDB.addCode(
+                                    Code(
+                                        id = null,
+                                        code = code,
+                                        date = date,
+                                        party = party,
+                                        job = job,
+                                        time = currentTimeMillis(),
+                                        printer = 0,
+                                        valid = 1
+                                    )
+                                )
+                                // Добавление кода в массив.
+                                arrayOfCodes.add(code)
+                                //                        Log.d(TAG, "run: Код добавлен")
+                                factoryCounter = globalVariables.getCounter().toInt()
+                                factoryCounter += 1
+                                globalVariables.setCounter(factoryCounter.toString())
+                                factoryCounter = globalVariables.getCounter().toInt()
+                                if (evenScan) {
+                                    activity.runOnUiThread {
+                                        textNotification.text =
+                                            "Статус кода: добавлен в базу"
+                                        textCounter.text = factoryCounter.toString()
+                                        frameColor.setBackgroundColor(Color.GREEN)
+                                    }
+                                    //                            Log.d(TAG, "run: Зелёный")
+                                } else {
+                                    activity.runOnUiThread {
+                                        textNotification.text =
+                                            "Статус кода: добавлен в базу"
+                                        textCounter.text = factoryCounter.toString()
+                                        frameColor.setBackgroundColor(Color.YELLOW)
+                                    }
+                                    //                            Log.d(TAG, "run: Жёлтый")
+                                }
+                                evenScan = !evenScan
                             }
+                            //                            Log.e(ContentValues.TAG, "inputCode: $inputString")
+                            //                            Log.e(ContentValues.TAG, "code: $code")
+                            globalVariables.setCounter(factoryCounter.toString())
                         }
                     }
-                    // Актуализация счётчика
-                    globalVariables.setCounter(
-                        codeDB.getCodes(gtin, job, party).distinct().size.toString()
-                    )
-                    factoryCounter = globalVariables.getCounter().toInt()
-                    activity.runOnUiThread {
-                        textCounter.text = factoryCounter.toString()
+                    // Если счётчик равен 100, то скинуть файл на сервер
+                    if (sendCounter == 100) {
+                        report(gtin, date, party, job, codeDB, jsonAndDate)
+                        sendCounter = 0
+                    } else {
+                        sendCounter += 1
                     }
                 }
             }
@@ -369,6 +226,7 @@ class OneCode(
         }
     }
 
+    // Создание отчёта каждые n-е количество тиков сканирования
     private fun report(
         gtin: String,
         date: String,
@@ -382,7 +240,8 @@ class OneCode(
                 "${workshop}_${line}_${gtin}_${factoryCounter}_${date}_" +
                         "${party}_${job}_${plan}_${status}.json"
             File(pathFile)
-            val listCodes = codeDB.getCodes(gtin, job, party).distinct()
+//            val listCodes = codeDB.getCodes(gtin, job, party).distinct()
+            val listCodes = arrayOfCodes.toList()
             val jsonFile = jsonAndDate.createJsonFile(
                 context = context,
                 expDate = globalVariables.getExpDateWork(),
@@ -399,7 +258,6 @@ class OneCode(
             )
             jsonAndDate.uploadFileToServer(jsonFile)
 //                                Log.e(TAG, "Отчёт: Файл создан", )
-            // Обнуление счётчика на отправку файла
         }
     }
 }

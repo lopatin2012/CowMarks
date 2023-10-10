@@ -62,14 +62,6 @@
     <string name="utility_checking_gtin_button">Установить</string>
 
 
-
-
-    <string-array name="settings_camera_mode">
-        <item>Проверка</item>
-        <item>Добавление</item>
-        <item>Поток</item>
-    </string-array>
-
     <!--Настройки-->
     <string name="settings_camera_text">Настройки камеры</string>
     <string name="settings_camera_ip_address_text">ip-адрес главной камеры</string>

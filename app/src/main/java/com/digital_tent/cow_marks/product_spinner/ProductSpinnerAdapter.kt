@@ -37,7 +37,7 @@ class ProductSpinnerAdapter(context: Context, private val list: List<ProductSpin
 
         productName.text = products.product
         Picasso.get().load("http://172.16.16.239/static/images/${products.imageUrl}.jpg")
-            .resize(50,50)
+            .resize(75,75)
             .into(productImageView)
 
         return view

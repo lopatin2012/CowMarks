@@ -84,8 +84,6 @@ class FragmentSettings(private val workshopDB: WorkshopDao) : Fragment() {
         // Камера
         cameraIp = binding.settingsCameraIpAddressEdit
         cameraPort = binding.settingsCameraPortEdit
-        cameraModeText = binding.settingsCameraModeText
-        cameraMode = binding.settingsCameraModeList
         // Вторая камера с CBX, если есть.
         cameraIp2 = binding.settingsCameraIpAddressEdit2
         cameraPort2 = binding.settingsCameraPortEdit2
@@ -106,7 +104,6 @@ class FragmentSettings(private val workshopDB: WorkshopDao) : Fragment() {
         // Камера
         cameraIp.setText(globalVariables.getCameraIp())
         cameraPort.setText(globalVariables.getCameraPort().toString())
-        cameraModeText.text = resources.getString(R.string.settings_camera_mode_text, globalVariables.getScanningMode())
         // Вторая камера
         cameraIp2.setText(globalVariables.getCameraIp2())
         cameraPort2.setText(globalVariables.getCameraPort2().toString())
@@ -132,8 +129,6 @@ class FragmentSettings(private val workshopDB: WorkshopDao) : Fragment() {
     // Выбор цеха с изменением линий
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        // Формируем список режимов для камеры
-        modeScanning()
         CoroutineScope(Dispatchers.Main).launch {
             val workshopDB = WorkshopDB.getDB(requireContext().applicationContext).workshopDao()
             workshopItems = withContext(Dispatchers.IO) {
@@ -165,8 +160,6 @@ class FragmentSettings(private val workshopDB: WorkshopDao) : Fragment() {
             // Камера
             globalVariables.setCameraIp(cameraIp.text.toString())
             globalVariables.setCameraPort(cameraPort.text.toString().toInt())
-            globalVariables.setScanningMode(cameraMode.selectedItem.toString())
-            cameraModeText.text = resources.getString(R.string.settings_camera_mode_text, globalVariables.getScanningMode())
             // Вторая камера
             globalVariables.setCameraIp2(cameraIp2.text.toString())
             globalVariables.setCameraPor2(cameraPort2.text.toString().toInt())
@@ -211,15 +204,6 @@ class FragmentSettings(private val workshopDB: WorkshopDao) : Fragment() {
             lineList.adapter = adapter
             adapter.notifyDataSetChanged()
             Log.e("Линии", lineItems.toString())
-        }
-    }
-
-    private fun modeScanning() {
-        CoroutineScope(Dispatchers.IO).launch {
-            val cameraModeList = listOf<String>(*resources.getStringArray(R.array.settings_camera_mode))
-            val adapter =
-                ArrayAdapter(requireActivity(), android.R.layout.simple_list_item_1, cameraModeList)
-            cameraMode.adapter = adapter
         }
     }
 

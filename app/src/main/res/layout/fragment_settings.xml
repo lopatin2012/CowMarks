@@ -87,20 +87,6 @@
                         android:imeOptions="actionDone"/>
 
                     <TextView
-                        android:id="@+id/settings_camera_mode_text"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:paddingTop="20dp"
-                        android:text="@string/settings_camera_mode_text"
-                        android:textSize="14sp" />
-
-                    <Spinner
-                        android:id="@+id/settings_camera_mode_list"
-                        android:layout_width="wrap_content"
-                        android:layout_height="48dp" />
-
-                    <TextView
                         android:id="@+id/settings_camera_ip_address_text2"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

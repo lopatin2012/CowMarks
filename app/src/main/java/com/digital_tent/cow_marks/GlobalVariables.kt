@@ -92,15 +92,6 @@ class GlobalVariables: Application() {
         editor.putBoolean("scanning", scanning)
         editor.apply()
     }
-    // Получить режим сканирования
-    fun getScanningMode(): String {
-        return sharedPreferences.getString("scanning_mode", "Проверка")?: ""
-    }
-    // Сохранить режим сканирования
-    fun setScanningMode(scanningMode: String) {
-        editor.putString("scanning_mode", scanningMode)
-        editor.apply()
-    }
     // Получить флаг на сканирование с двух разных cbx
     fun getTwoScanning(): Boolean {
         return sharedPreferences.getBoolean("two_scanning", false)
