@@ -2,4 +2,6 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <!--Цвет для кнопки-->
+    <color name="violet">#61398F</color>
 </resources>

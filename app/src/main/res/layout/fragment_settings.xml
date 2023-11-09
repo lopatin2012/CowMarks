@@ -309,22 +309,22 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="32dp"
+            android:layout_marginBottom="16dp"
             android:text="@string/settings_button_save"
             android:textSize="16sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <Button
             android:id="@+id/settings_button_update_data"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="48dp"
-            android:layout_marginTop="32dp"
+            android:layout_marginBottom="16dp"
             android:text="@string/settings_button_update_data"
             android:textSize="16sp"
-            app:layout_constraintStart_toEndOf="@+id/settings_button_save"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/settings_button_save" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </FrameLayout>

@@ -140,6 +140,15 @@ class GlobalVariables: Application() {
         editor.putString("printer_template", template)
         editor.apply()
     }
+    // Получить статус печати.
+    fun getPrinting(): Boolean {
+        return sharedPreferences.getBoolean("printer_printing", false)
+    }
+    // Сохранить статус печати.
+    fun setPrinting(printing: Boolean) {
+        editor.putBoolean("printer_printing", printing)
+        editor.apply()
+    }
     // Параметры для терминала
     //----------------------------------------------------------------------------------------------
     // Получить порт терминала

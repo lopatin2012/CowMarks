@@ -226,7 +226,7 @@ class FragmentUtility : Fragment() {
             } catch (e: Exception) {
                 Log.e(ContentValues.TAG, "Ошибка при отправке команды: ${e.message}")
                 withContext(Dispatchers.Main) {
-                    cameraText.text = "Не удалось подключиться к камере"
+                    cameraText.text = "Ошибка подключения"
                     cameraText.setBackgroundColor(Color.RED)
                 }
             }

@@ -44,7 +44,7 @@ class ServerForTSD(
                     Log.e(MotionEffect.TAG, "Ожидание подключения")
                     val socket = serverSocket.accept()
                     Log.e(MotionEffect.TAG, "Подключение установлено")
-                    Log.e(TAG, "run: ${socket.getInputStream().read()}", )
+                    Log.e(TAG, "run: ${socket.getInputStream().read()}")
                     executor.execute {
                         try {
                             BufferedReader(InputStreamReader(socket.getInputStream())).use { `in` ->
@@ -66,53 +66,54 @@ class ServerForTSD(
                                         Log.e(TAG, "run: $inputLine")
                                         val codeDataMatrix = code[0]
                                         val gtin = code[0].substring(2, 16)
-                                        Log.e(TAG, "coe $inputLine", )
+                                        Log.e(TAG, "coe $inputLine")
                                         Log.e(MotionEffect.TAG, gtin)
                                         Log.e(MotionEffect.TAG, "Сервер получил код: $inputLine")
-                                        if (inputLine.contains(globalVariables.getGtinWork())) {
-                                            when (code[1]) {
-                                                "0" -> {
-                                                    val product_in_db: String =
-                                                        productDB.productDao()
-                                                            .getProductByGtin(gtin)
-                                                    Log.e(TAG, "run: $gtin",)
-                                                    val party_in_db: String =
-                                                        codeDB.codeDao()
-                                                            .getPartyByCode(codeDataMatrix)
-                                                    val date_in_db: String =
-                                                        codeDB.codeDao()
-                                                            .getDateByCode(codeDataMatrix)
-                                                    val job_in_db: String =
-                                                        codeDB.codeDao()
-                                                            .getJobByCode(codeDataMatrix)
-                                                    if (codeDB.codeDao().hasCode(codeDataMatrix)) {
-                                                        Log.e(
-                                                            MotionEffect.TAG,
-                                                            "Данные кода: " + code[0]
-                                                        )
-                                                        out.write(
-                                                            "0;;;;;" + date_in_db + ";;;;;" + party_in_db +
-                                                                    ";;;;;" + product_in_db + ";;;;;" + terminal +
-                                                                    ";;;;;" + job_in_db
-                                                        )
-                                                    } else {
-                                                        Log.e(
-                                                            MotionEffect.TAG,
-                                                            "Код не добавлен"
-                                                        )
-                                                        out.write(
-                                                            "1;;;;;Отсутствует;;;;;Отсутствует;;;;;" + product_in_db
-                                                                    + ";;;;;" + terminal +
-                                                                    ";;;;;Отсутствует"
-                                                        )
-                                                    }
-                                                    out.newLine() // Добавленная строка
-                                                    out.write("exit")
-                                                    out.newLine() // Добавлен
-                                                    out.flush()
-                                                }
 
-                                                "1" -> {
+                                        when (code[1]) {
+                                            "0" -> {
+                                                val product_in_db: String =
+                                                    productDB.productDao()
+                                                        .getProductByGtin(gtin)
+                                                Log.e(TAG, "run: $gtin")
+                                                val party_in_db: String =
+                                                    codeDB.codeDao()
+                                                        .getPartyByCode(codeDataMatrix)
+                                                val date_in_db: String =
+                                                    codeDB.codeDao()
+                                                        .getDateByCode(codeDataMatrix)
+                                                val job_in_db: String =
+                                                    codeDB.codeDao()
+                                                        .getJobByCode(codeDataMatrix)
+                                                if (codeDB.codeDao().hasCode(codeDataMatrix)) {
+                                                    Log.e(
+                                                        MotionEffect.TAG,
+                                                        "Данные кода: " + code[0]
+                                                    )
+                                                    out.write(
+                                                        "0;;;;;" + date_in_db + ";;;;;" + party_in_db +
+                                                                ";;;;;" + product_in_db + ";;;;;" + terminal +
+                                                                ";;;;;" + job_in_db
+                                                    )
+                                                } else {
+                                                    Log.e(
+                                                        MotionEffect.TAG,
+                                                        "Код не добавлен"
+                                                    )
+                                                    out.write(
+                                                        "1;;;;;Отсутствует;;;;;Отсутствует;;;;;" + product_in_db
+                                                                + ";;;;;" + terminal +
+                                                                ";;;;;Отсутствует"
+                                                    )
+                                                }
+                                                out.newLine() // Добавленная строка
+                                                out.write("exit")
+                                                out.newLine() // Добавлен
+                                                out.flush()
+                                            }
+
+                                            "1" -> {
+                                                if (inputLine.contains(globalVariables.getGtinWork())) {
                                                     val product_in_db: String =
                                                         productDB.productDao()
                                                             .getProductByGtin(gtin)
@@ -162,14 +163,7 @@ class ServerForTSD(
 
 
                                                     }
-                                                    out.newLine() // Добавленная строка
-                                                    out.write("exit")
-                                                    out.newLine() // Добавленная строка
-                                                    out.flush()
-                                                    out.write("exit")
-                                                }
-
-                                                "2" -> {
+                                                } else {
                                                     val product_in_db: String =
                                                         productDB.productDao()
                                                             .getProductByGtin(gtin)
@@ -182,58 +176,67 @@ class ServerForTSD(
                                                     val job_in_db: String =
                                                         codeDB.codeDao()
                                                             .getJobByCode(codeDataMatrix)
-                                                    if (codeDB.codeDao().hasCode(codeDataMatrix)) {
-                                                        Log.e(
-                                                            MotionEffect.TAG,
-                                                            "Код удалён"
-                                                        )
-                                                        // Удаление кода
-                                                        codeDB.codeDao()
-                                                            .deleteCodeTSD(codeDataMatrix)
-                                                        out.write(
-                                                            "1;;;;;" + date_in_db + ";;;;;" + party_in_db +
-                                                                    ";;;;;" + product_in_db + ";;;;;" + terminal +
-                                                                    ";;;;;" + job_in_db
-                                                        )
-                                                    } else {
-                                                        Log.e(
-                                                            MotionEffect.TAG,
-                                                            "Код в базе отсутствует"
-                                                        )
-                                                        out.write(
-                                                            "0;;;;;" + date + ";;;;;" + party +
-                                                                    ";;;;;" + product_in_db + ";;;;;" + terminal +
-                                                                    ";;;;;" + job
-                                                        )
-                                                    }
+                                                    out.write(
+                                                        "2;;;;;Отсутствует;;;;;Отсутствует;;;;;" + product_in_db
+                                                                + ";;;;;" + terminal +
+                                                                ";;;;;Отсутствует"
+                                                    )
                                                     out.newLine() // Добавленная строка
                                                     out.write("exit")
-                                                    out.newLine() // Добавлен
+                                                    out.newLine() // Добавленная строка
                                                     out.flush()
                                                 }
+                                                out.newLine() // Добавленная строка
+                                                out.write("exit")
+                                                out.newLine() // Добавленная строка
+                                                out.flush()
+                                                out.write("exit")
                                             }
-                                        }  else {
-                                            val product_in_db: String =
-                                                productDB.productDao().getProductByGtin(gtin)
-                                            val party_in_db: String =
-                                                codeDB.codeDao()
-                                                    .getPartyByCode(codeDataMatrix)
-                                            val date_in_db: String =
-                                                codeDB.codeDao()
-                                                    .getDateByCode(codeDataMatrix)
-                                            val job_in_db: String =
-                                                codeDB.codeDao()
-                                                    .getJobByCode(codeDataMatrix)
-                                            out.write(
-                                                "2;;;;;Отсутствует;;;;;Отсутствует;;;;;" + product_in_db
-                                                        + ";;;;;" + terminal +
-                                                        ";;;;;Отсутствует"
-                                            )
-                                            out.newLine() // Добавленная строка
-                                            out.write("exit")
-                                            out.newLine() // Добавленная строка
-                                            out.flush()
+
+                                            "2" -> {
+                                                val product_in_db: String =
+                                                    productDB.productDao()
+                                                        .getProductByGtin(gtin)
+                                                val party_in_db: String =
+                                                    codeDB.codeDao()
+                                                        .getPartyByCode(codeDataMatrix)
+                                                val date_in_db: String =
+                                                    codeDB.codeDao()
+                                                        .getDateByCode(codeDataMatrix)
+                                                val job_in_db: String =
+                                                    codeDB.codeDao()
+                                                        .getJobByCode(codeDataMatrix)
+                                                if (codeDB.codeDao().hasCode(codeDataMatrix)) {
+                                                    Log.e(
+                                                        MotionEffect.TAG,
+                                                        "Код удалён"
+                                                    )
+                                                    // Удаление кода
+                                                    codeDB.codeDao()
+                                                        .deleteCodeTSD(codeDataMatrix)
+                                                    out.write(
+                                                        "1;;;;;" + date_in_db + ";;;;;" + party_in_db +
+                                                                ";;;;;" + product_in_db + ";;;;;" + terminal +
+                                                                ";;;;;" + job_in_db
+                                                    )
+                                                } else {
+                                                    Log.e(
+                                                        MotionEffect.TAG,
+                                                        "Код в базе отсутствует"
+                                                    )
+                                                    out.write(
+                                                        "0;;;;;" + date + ";;;;;" + party +
+                                                                ";;;;;" + product_in_db + ";;;;;" + terminal +
+                                                                ";;;;;" + job
+                                                    )
+                                                }
+                                                out.newLine() // Добавленная строка
+                                                out.write("exit")
+                                                out.newLine() // Добавлен
+                                                out.flush()
+                                            }
                                         }
+
                                     }
                                     Log.e(
                                         MotionEffect.TAG,

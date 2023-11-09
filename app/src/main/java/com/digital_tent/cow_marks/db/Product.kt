@@ -1,6 +1,5 @@
 package com.digital_tent.cow_marks.db
 
-import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 

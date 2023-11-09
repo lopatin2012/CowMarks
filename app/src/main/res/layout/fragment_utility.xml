@@ -90,7 +90,7 @@
 
         <Spinner
             android:id="@+id/utility_camera_jobs_list"
-            android:layout_width="wrap_content"
+            android:layout_width="70dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
             android:layout_marginEnd="64dp"

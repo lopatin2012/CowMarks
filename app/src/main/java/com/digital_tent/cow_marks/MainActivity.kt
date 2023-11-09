@@ -9,6 +9,7 @@ import androidx.navigation.ui.NavigationUI
 import com.digital_tent.cow_marks.databinding.ActivityMainBinding
 import com.digital_tent.cow_marks.databinding.FragmentFactoryBinding
 import com.digital_tent.cow_marks.db.CodeDB
+import com.digital_tent.cow_marks.db.CodesForPrinterDB
 import com.digital_tent.cow_marks.db.ProductDB
 import com.digital_tent.cow_marks.db.WorkshopDB
 import com.digital_tent.cow_marks.list_job.Job
@@ -35,6 +36,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         globalVariables = application as GlobalVariables
+        globalVariables.setPrinting(false)
         binding = ActivityMainBinding.inflate(layoutInflater)
         bindingFactory = FragmentFactoryBinding.inflate(layoutInflater)
         bindingMain = ActivityMainBinding.inflate(layoutInflater)
@@ -45,6 +47,8 @@ class MainActivity : AppCompatActivity() {
         val workshopDB = WorkshopDB.getDB(this@MainActivity).workshopDao()
         val productDB = ProductDB.getDB(this@MainActivity).productDao()
         val codeDB = CodeDB.getDB(this@MainActivity).codeDao()
+        val codesForPrinterDB = CodesForPrinterDB.getDB(this@MainActivity)
+            .CodesForPrinterDao()
         val adapter = JobAdapter(
             globalVariables,
             jobsList,
@@ -77,7 +81,8 @@ class MainActivity : AppCompatActivity() {
                         .beginTransaction()
                         .replace(
                             R.id.fragment_main_menu,
-                            FragmentNewJob.newInstance(codeDB, productDB, supportFragmentManager)
+                            FragmentNewJob.newInstance(codeDB, productDB, codesForPrinterDB,
+                                supportFragmentManager)
                         )
                         .commit()
                 }

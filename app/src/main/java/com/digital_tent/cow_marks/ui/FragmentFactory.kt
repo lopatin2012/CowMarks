@@ -10,6 +10,7 @@ import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -28,6 +29,7 @@ import com.digital_tent.cow_marks.list_job.Job
 import com.digital_tent.cow_marks.list_job.JobAdapter
 import com.digital_tent.cow_marks.printer.CodePrinting
 import com.digital_tent.cow_marks.printer.DialogPrinter
+import com.digital_tent.cow_marks.printer.DialogPrinterEnd
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -40,6 +42,11 @@ class FragmentFactory(
     private val codeDB: CodeDao,
     private var supportFragmentManager: FragmentManager
 ) : Fragment() {
+
+    // Тестовый список для печати кодов с принтера VideoJet.
+    private var listCodes: MutableList<String> = mutableListOf(
+        "0104601751007315215!!5jf\u001D93qb6L", "0104601751007315215!!7Z)\u001D93jhJ2",
+    "0104601751007315215!!8eZ\u001D936M8j", "0104601751007315215!!BRh\u001D93JL3o")
 
     // Кнопка завершения партии
     private lateinit var buttonEnd: Button
@@ -103,6 +110,8 @@ class FragmentFactory(
             binding.factoryCodesOnThePtinter.isVisible = false
             binding.factoryNumbersOfCodes.isVisible = false
             binding.factoryPrinterTemplate.isVisible = false
+        } else {
+            binding.factoryPrinterTemplate.text = globalVariables.getTemplate()
         }
         // отображение текущего задания
         CoroutineScope(Dispatchers.IO).launch {
@@ -174,6 +183,14 @@ class FragmentFactory(
                 }
             }
         }
+        if (globalVariables.getPrinting()) {
+            buttonPrinter.setBackgroundColor(Color.GRAY)
+
+        } else {
+            buttonPrinter.setBackgroundColor(
+                ContextCompat.getColor(
+                    requireActivity().applicationContext , R.color.violet))
+        }
 
         // Кнопка запуска печати на принтере
         buttonPrinter.setOnClickListener {
@@ -181,17 +198,34 @@ class FragmentFactory(
                 dateWork = globalVariables.getDateWork()
                 dateExpWork = globalVariables.getExpDateWork()
                 partyWork = globalVariables.getPartyWork()
-                codePrinting = CodePrinting(globalVariables, binding)
-                codePrinting.clear()
-                delay(200)
-                codePrinting.getTemplatesList()
-                delay(200)
-                val listTemplates = codePrinting.listTemplates().toTypedArray()
-                Log.e("Printer", listTemplates.toString() )
-                val dialogPrinting = DialogPrinter.newInstance(listTemplates)
-                dialogPrinting.show(supportFragmentManager, "Шаблоны")
-                codePrinting.printingCodes(globalVariables.getTemplate(), dateWork, dateExpWork,
-                    "0104601751003768215!!)&a\u001D93zknO", partyWork)
+                codePrinting = CodePrinting(globalVariables, requireContext())
+                if (globalVariables.getPrinting()) {
+                    val dialogPrintingEnd = DialogPrinterEnd(binding, requireContext())
+                    dialogPrintingEnd.show(supportFragmentManager, "DialogPriterEnd")
+                } else {
+
+                    // Чистка очереди печати.
+                    codePrinting.clear()
+                    delay(150)
+                    // Получить список шаблонов для печати.
+                    codePrinting.getTemplatesList()
+                    delay(150)
+                    // Получение списка шаблонов на принтере.
+                    val listTemplates = codePrinting.listTemplates().toTypedArray()
+                    // Установить статус печати.
+                    globalVariables.setPrinting(true)
+                    buttonPrinter.setBackgroundColor(Color.GRAY)
+                    // Отображение в диалоговом окне список шаблонов печати.
+                    val dialogPrinting = DialogPrinter.newInstance(listTemplates, binding, requireContext())
+                    dialogPrinting.show(supportFragmentManager, "Шаблоны")
+//                    // Отправка выбранного шаблона на печать.
+//                    codePrinting.setTemplate(globalVariables.getTemplate())
+//                    // Печать кодов.
+//                    codePrinting.printingCodes(
+//                        dateWork, dateExpWork, partyWork, listCodes
+//                    )
+
+                }
             }
         }
 
