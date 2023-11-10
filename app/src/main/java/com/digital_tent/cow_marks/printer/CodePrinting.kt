@@ -162,10 +162,6 @@ class CodePrinting(val globalVariables: GlobalVariables, contextForPrinter: Cont
                             Log.e("Коды в списке", listCodes.toString())
                             for (code in listCodes) {
                                 delay(50)
-                                CoroutineScope(Dispatchers.IO).launch {
-                                    codesForPrinterDB.deleteCodeForPrinter(code)
-                                }
-                                listCodes.remove(code)
                                 // Подготовка переменных для отправки на печать
                                 val gtin = code.substring(2, 17)
                                 val sn = code.substring(18, 25)
@@ -179,6 +175,12 @@ class CodePrinting(val globalVariables: GlobalVariables, contextForPrinter: Cont
                                 output.flush()
                                 Log.e("Код отправлен: ", String(buffer, 0, input.read(buffer)))
                             }
+                            for (code in listCodes) {
+                                CoroutineScope(Dispatchers.IO).launch {
+                                    codesForPrinterDB.deleteCodeForPrinter(code)
+                                }
+                            }
+                            listCodes.clear()
                         }
                     }
                 }

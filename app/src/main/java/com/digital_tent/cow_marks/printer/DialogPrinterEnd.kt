@@ -35,8 +35,8 @@ class DialogPrinterEnd(fragmentFactoryBinding: FragmentFactoryBinding, contextFo
                     binding.factoryButtonStartPrinting.setBackgroundColor(ContextCompat.getColor(
                         requireActivity().applicationContext , R.color.violet))
                     CoroutineScope(Dispatchers.IO).launch {
+                        delay(1500)
                         codePrinting.clear()
-                        delay(150)
                     }
                 }
                 .setNegativeButton("Нет") { _, _ ->

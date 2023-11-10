@@ -1317,7 +1317,7 @@ class FragmentNewJob(
                             CodesForPrinter(
                                 id = null,
                                 code = code,
-                                date = jobDate
+                                date = System.currentTimeMillis()
                             )
                         )
                     }

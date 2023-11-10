@@ -8,5 +8,5 @@ data class CodesForPrinter (
     @PrimaryKey (autoGenerate = true)
     val id: Int? = null,
     val code: String,
-    val date: String,
+    val date: Long,
 )
